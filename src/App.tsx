@@ -126,30 +126,30 @@ export default function App() {
   }, [bothStartDate, bothYears, bothMonths, bothDays, bothFineAmount, bothFineRate, bothDeduction]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans p-4 sm:p-6 lg:p-8 transition-colors duration-200">
       <div className="max-w-3xl mx-auto space-y-8">
         
         {/* Header */}
         <header className="text-center space-y-4 pt-8 pb-4">
-          <div className="inline-flex items-center justify-center p-3 bg-indigo-100 rounded-2xl mb-2 text-indigo-700">
+          <div className="inline-flex items-center justify-center p-3 bg-indigo-100 dark:bg-indigo-500/20 rounded-2xl mb-2 text-indigo-700 dark:text-indigo-400 transition-colors">
             <Scale className="w-10 h-10" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 transition-colors">
             คำนวณวันจำคุกและกักขังแทนค่าปรับ
           </h1>
-          <p className="text-slate-500 max-w-xl mx-auto">
+          <p className="text-slate-500 dark:text-slate-400 max-w-xl mx-auto transition-colors">
             เครื่องมือช่วยคำนวณกำหนดวันพ้นโทษตามประมวลกฎหมายอาญา มาตรา 21 (ให้นับ 1 เดือนเท่ากับ 30 วัน) และคำนวณจำนวนวันกักขังแทนค่าปรับตามมาตรา 29
           </p>
         </header>
 
         {/* Tab Navigation */}
-        <div className="flex bg-slate-200/60 p-1 rounded-xl">
+        <div className="flex bg-slate-200/60 dark:bg-slate-800/60 p-1 rounded-xl transition-colors">
           <button
             onClick={() => setActiveTab('prison')}
             className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 text-sm font-medium rounded-lg transition-all ${
               activeTab === 'prison'
-                ? 'bg-white text-indigo-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-sm'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
             }`}
           >
             <CalendarDays className="w-4 h-4" />
@@ -159,8 +159,8 @@ export default function App() {
             onClick={() => setActiveTab('fine')}
             className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 text-sm font-medium rounded-lg transition-all ${
               activeTab === 'fine'
-                ? 'bg-white text-indigo-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-sm'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
             }`}
           >
             <Coins className="w-4 h-4" />
@@ -170,8 +170,8 @@ export default function App() {
             onClick={() => setActiveTab('both')}
             className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 text-sm font-medium rounded-lg transition-all ${
               activeTab === 'both'
-                ? 'bg-white text-indigo-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-sm'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
             }`}
           >
             <Scale className="w-4 h-4" />
@@ -180,7 +180,7 @@ export default function App() {
         </div>
 
         {/* Content Area */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8 overflow-hidden transition-colors">
           <AnimatePresence mode="wait">
             {activeTab === 'prison' && (
               <motion.div
@@ -194,66 +194,66 @@ export default function App() {
                 <div className="space-y-6">
                   {/* Quick Examples */}
                   <div className="flex flex-wrap gap-2 mb-2">
-                    <span className="text-sm text-slate-500 py-1.5 font-medium">ตัวอย่าง:</span>
-                    <button onClick={() => { setPrisonYears(1); setPrisonMonths(6); setPrisonDays(0); }} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors">1 ปี 6 เดือน</button>
-                    <button onClick={() => { setPrisonYears(0); setPrisonMonths(3); setPrisonDays(15); }} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors">3 เดือน 15 วัน</button>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 py-1.5 font-medium transition-colors">ตัวอย่าง:</span>
+                    <button onClick={() => { setPrisonYears(1); setPrisonMonths(6); setPrisonDays(0); }} className="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full transition-colors">1 ปี 6 เดือน</button>
+                    <button onClick={() => { setPrisonYears(0); setPrisonMonths(3); setPrisonDays(15); }} className="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full transition-colors">3 เดือน 15 วัน</button>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">หักวันต้องขัง (วัน)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">หักวันต้องขัง (วัน)</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="0"
                         value={prisonDeduction}
                         onChange={(e) => setPrisonDeduction(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">วันที่เริ่มจำคุก</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">วันที่เริ่มจำคุก</label>
                       <input
                         type="date"
                         value={prisonStartDate}
                         onChange={(e) => setPrisonStartDate(e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">ปี</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">ปี</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="0"
                         value={prisonYears}
                         onChange={(e) => setPrisonYears(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">เดือน</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">เดือน</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="0"
                         value={prisonMonths}
                         onChange={(e) => setPrisonMonths(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">วัน</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">วัน</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="0"
                         value={prisonDays}
                         onChange={(e) => setPrisonDays(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                   </div>
@@ -263,18 +263,18 @@ export default function App() {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-6 bg-indigo-50 border border-indigo-100 rounded-2xl"
+                    className="p-6 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-500/30 rounded-2xl transition-colors"
                   >
                     <div className="flex flex-col items-center text-center space-y-2">
-                      <span className="text-indigo-600 font-medium flex items-center gap-2">
+                      <span className="text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-2 transition-colors">
                         <Calendar className="w-5 h-5" />
                         กำหนดวันพ้นโทษ
                       </span>
-                      <span className="text-3xl font-bold text-indigo-900">
+                      <span className="text-3xl font-bold text-indigo-900 dark:text-indigo-100 transition-colors">
                         {formatThaiDate(prisonResult)}
                       </span>
                       {prisonStartDate && (
-                         <span className="text-sm text-indigo-700/70 mt-2">
+                         <span className="text-sm text-indigo-700/70 dark:text-indigo-300/70 mt-2 transition-colors">
                            (นับตั้งแต่วันที่ {formatThaiDate(new Date(prisonStartDate))})
                          </span>
                       )}
@@ -282,11 +282,11 @@ export default function App() {
                   </motion.div>
                 )}
                 
-                <div className="flex gap-3 items-start p-4 bg-slate-50 rounded-xl text-sm text-slate-600">
-                  <Info className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                <div className="flex gap-3 items-start p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm text-slate-600 dark:text-slate-400 transition-colors">
+                  <Info className="w-5 h-5 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
                   <p>
-                    <strong className="font-semibold text-slate-700">หลักการคำนวณตาม ป.อ. มาตรา 21:</strong><br />
-                    การนับระยะเวลาให้นับเป็นวัน ถ้านับเป็นเดือนให้ถือว่า 1 เดือนมี 30 วัน ถ้านับเป็นปีให้คำนวณตามปีปฏิทิน และให้นับวันเริ่มจำคุกรวมเข้าด้วย <strong className="text-slate-800">โดยการปล่อยตัวจะปล่อยในวันถัดจากวันที่ครบกำหนดโทษ</strong> (ระบบนี้คำนวณแสดงเป็นวันที่ต้องปล่อยตัวจริงให้แล้ว)
+                    <strong className="font-semibold text-slate-700 dark:text-slate-300">หลักการคำนวณตาม ป.อ. มาตรา 21:</strong><br />
+                    การนับระยะเวลาให้นับเป็นวัน ถ้านับเป็นเดือนให้ถือว่า 1 เดือนมี 30 วัน ถ้านับเป็นปีให้คำนวณตามปีปฏิทิน และให้นับวันเริ่มจำคุกรวมเข้าด้วย <strong className="text-slate-800 dark:text-slate-200">โดยการปล่อยตัวจะปล่อยในวันถัดจากวันที่ครบกำหนดโทษ</strong> (ระบบนี้คำนวณแสดงเป็นวันที่ต้องปล่อยตัวจริงให้แล้ว)
                   </p>
                 </div>
               </motion.div>
@@ -304,54 +304,54 @@ export default function App() {
                 <div className="space-y-6">
                   {/* Quick Examples */}
                   <div className="flex flex-wrap gap-2 mb-2">
-                    <span className="text-sm text-slate-500 py-1.5 font-medium">ตัวอย่าง:</span>
-                    <button onClick={() => { setFineAmount(15000); setFineRate(500); }} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors">ปรับ 15,000 บาท</button>
-                    <button onClick={() => { setFineAmount(100000); setFineRate(500); }} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors">ปรับ 100,000 บาท</button>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 py-1.5 font-medium transition-colors">ตัวอย่าง:</span>
+                    <button onClick={() => { setFineAmount(15000); setFineRate(500); }} className="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full transition-colors">ปรับ 15,000 บาท</button>
+                    <button onClick={() => { setFineAmount(100000); setFineRate(500); }} className="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full transition-colors">ปรับ 100,000 บาท</button>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">จำนวนเงินค่าปรับ (บาท)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">จำนวนเงินค่าปรับ (บาท)</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="เช่น 15000"
                         value={fineAmount}
                         onChange={(e) => setFineAmount(e.target.value ? parseFloat(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">อัตรากักขังต่อวัน (บาท)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">อัตรากักขังต่อวัน (บาท)</label>
                       <input
                         type="number"
                         min="1"
                         value={fineRate}
                         onChange={(e) => setFineRate(e.target.value ? parseInt(e.target.value) : 500)}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">หักวันต้องขัง (วัน)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">หักวันต้องขัง (วัน)</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="0"
                         value={fineDeduction}
                         onChange={(e) => setFineDeduction(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">วันที่เริ่มกักขัง (เว้นว่างได้ถ้าต้องการดูแค่จำนวนวัน)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">วันที่เริ่มกักขัง (เว้นว่างได้ถ้าต้องการดูแค่จำนวนวัน)</label>
                       <input
                         type="date"
                         value={fineStartDate}
                         onChange={(e) => setFineStartDate(e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                   </div>
@@ -361,28 +361,28 @@ export default function App() {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-6 bg-indigo-50 border border-indigo-100 rounded-2xl"
+                    className="p-6 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-500/30 rounded-2xl transition-colors"
                   >
                     <div className="flex flex-col items-center text-center space-y-4">
                       <div className="space-y-1">
-                        <span className="text-indigo-600 font-medium">จำนวนวันกักขังสุทธิ (หลังหักวันต้องขัง)</span>
-                        <div className="text-3xl font-bold text-indigo-900">
+                        <span className="text-indigo-600 dark:text-indigo-400 font-medium transition-colors">จำนวนวันกักขังสุทธิ (หลังหักวันต้องขัง)</span>
+                        <div className="text-3xl font-bold text-indigo-900 dark:text-indigo-100 transition-colors">
                           {fineResult.days.toLocaleString()} วัน
                         </div>
                         {Number(fineDeduction) > 0 && (
-                          <div className="text-sm text-indigo-700/70 mt-1">
+                          <div className="text-sm text-indigo-700/70 dark:text-indigo-300/70 mt-1 transition-colors">
                             (จากเดิม {fineResult.baseDays?.toLocaleString()} วัน หัก {fineDeduction} วัน)
                           </div>
                         )}
                       </div>
 
                       {fineResult.releaseDate && (
-                        <div className="pt-4 border-t border-indigo-200/50 w-full">
-                          <span className="text-indigo-600 font-medium text-sm flex items-center justify-center gap-1.5 mb-1">
+                        <div className="pt-4 border-t border-indigo-200/50 dark:border-indigo-500/20 w-full transition-colors">
+                          <span className="text-indigo-600 dark:text-indigo-400 font-medium text-sm flex items-center justify-center gap-1.5 mb-1 transition-colors">
                             <Calendar className="w-4 h-4" />
                             วันพ้นกักขัง
                           </span>
-                          <span className="text-xl font-bold text-indigo-800">
+                          <span className="text-xl font-bold text-indigo-800 dark:text-indigo-300 transition-colors">
                             {formatThaiDate(fineResult.releaseDate)}
                           </span>
                         </div>
@@ -392,19 +392,19 @@ export default function App() {
                 )}
 
                 <div className="space-y-3">
-                  <div className="flex gap-3 items-start p-4 bg-slate-50 rounded-xl text-sm text-slate-600">
-                    <Info className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                  <div className="flex gap-3 items-start p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm text-slate-600 dark:text-slate-400 transition-colors">
+                    <Info className="w-5 h-5 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
                     <p>
-                      <strong className="font-semibold text-slate-700">หลักการคำนวณตาม ป.อ. มาตรา 29:</strong><br />
-                      ให้ถืออัตรา 500 บาท ต่อ 1 วัน เศษของวันให้ปัดเป็นหนึ่งวัน <strong className="text-slate-800">โดยการปล่อยตัวจะปล่อยในวันถัดจากวันที่ครบกำหนดกักขัง</strong> (ระบบแสดงเป็นวันที่พ้นกักขังจริง)
+                      <strong className="font-semibold text-slate-700 dark:text-slate-300">หลักการคำนวณตาม ป.อ. มาตรา 29:</strong><br />
+                      ให้ถืออัตรา 500 บาท ต่อ 1 วัน เศษของวันให้ปัดเป็นหนึ่งวัน <strong className="text-slate-800 dark:text-slate-200">โดยการปล่อยตัวจะปล่อยในวันถัดจากวันที่ครบกำหนดกักขัง</strong> (ระบบแสดงเป็นวันที่พ้นกักขังจริง)
                     </p>
                   </div>
                   
                   {fineResult.days > 365 && (
-                    <div className="flex gap-3 items-start p-4 bg-orange-50 border border-orange-100 rounded-xl text-sm text-orange-800">
-                      <AlertTriangle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
+                    <div className="flex gap-3 items-start p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-500/30 rounded-xl text-sm text-orange-800 dark:text-orange-300 transition-colors">
+                      <AlertTriangle className="w-5 h-5 text-orange-500 dark:text-orange-400 shrink-0 mt-0.5" />
                       <p>
-                        <strong className="font-semibold text-orange-900">ข้อควรระวัง:</strong><br />
+                        <strong className="font-semibold text-orange-900 dark:text-orange-200">ข้อควรระวัง:</strong><br />
                         ตามกฎหมายปกติ การกักขังแทนค่าปรับต้อง<strong className="font-bold underline">ไม่เกิน 1 ปี</strong> (เว้นแต่ในกรณีที่ศาลพิพากษาปรับตั้งแต่แปดหมื่นบาทขึ้นไป ศาลจะสั่งให้กักขังแทนค่าปรับเป็นระยะเวลาเกินกว่า 1 ปีแต่ไม่เกิน 2 ปีก็ได้) โปรดตรวจสอบคำพิพากษา
                       </p>
                     </div>
@@ -425,89 +425,89 @@ export default function App() {
                 <div className="space-y-6">
                   {/* Quick Examples */}
                   <div className="flex flex-wrap gap-2 mb-2">
-                    <span className="text-sm text-slate-500 py-1.5 font-medium">ตัวอย่าง:</span>
-                    <button onClick={() => { setBothYears(1); setBothMonths(0); setBothDays(0); setBothFineAmount(10000); setBothFineRate(500); }} className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors">จำคุก 1 ปี ปรับ 10,000</button>
+                    <span className="text-sm text-slate-500 dark:text-slate-400 py-1.5 font-medium transition-colors">ตัวอย่าง:</span>
+                    <button onClick={() => { setBothYears(1); setBothMonths(0); setBothDays(0); setBothFineAmount(10000); setBothFineRate(500); }} className="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full transition-colors">จำคุก 1 ปี ปรับ 10,000</button>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">หักวันต้องขัง (วัน)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">หักวันต้องขัง (วัน)</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="0"
                         value={bothDeduction}
                         onChange={(e) => setBothDeduction(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">วันที่เริ่มจำคุก</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">วันที่เริ่มจำคุก</label>
                       <input
                         type="date"
                         value={bothStartDate}
                         onChange={(e) => setBothStartDate(e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">จำคุก (ปี)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">จำคุก (ปี)</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="0"
                         value={bothYears}
                         onChange={(e) => setBothYears(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">จำคุก (เดือน)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">จำคุก (เดือน)</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="0"
                         value={bothMonths}
                         onChange={(e) => setBothMonths(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">จำคุก (วัน)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">จำคุก (วัน)</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="0"
                         value={bothDays}
                         onChange={(e) => setBothDays(e.target.value ? parseInt(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                  <div className="grid sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100 dark:border-slate-800 transition-colors">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">จำนวนเงินค่าปรับ (บาท)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">จำนวนเงินค่าปรับ (บาท)</label>
                       <input
                         type="number"
                         min="0"
                         placeholder="เช่น 10000"
                         value={bothFineAmount}
                         onChange={(e) => setBothFineAmount(e.target.value ? parseFloat(e.target.value) : '')}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">อัตรากักขังต่อวัน (บาท)</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 transition-colors">อัตรากักขังต่อวัน (บาท)</label>
                       <input
                         type="number"
                         min="1"
                         value={bothFineRate}
                         onChange={(e) => setBothFineRate(e.target.value ? parseInt(e.target.value) : 500)}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors text-slate-900 dark:text-slate-100"
                       />
                     </div>
                   </div>
@@ -517,36 +517,36 @@ export default function App() {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-6 bg-indigo-50 border border-indigo-100 rounded-2xl"
+                    className="p-6 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-500/30 rounded-2xl transition-colors"
                   >
                     <div className="flex flex-col items-center text-center space-y-6">
                       <div className="grid sm:grid-cols-2 gap-4 w-full">
-                        <div className="p-4 bg-white/60 rounded-xl">
-                          <span className="text-indigo-600 font-medium text-sm flex items-center justify-center gap-1.5 mb-2">
+                        <div className="p-4 bg-white/60 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-700 transition-colors">
+                          <span className="text-indigo-600 dark:text-indigo-400 font-medium text-sm flex items-center justify-center gap-1.5 mb-2 transition-colors">
                             <CalendarDays className="w-4 h-4" />
                             ครบกำหนดจำคุก (หลังหักวันต้องขัง)
                           </span>
-                          <span className="text-xl font-bold text-indigo-900">
+                          <span className="text-xl font-bold text-indigo-900 dark:text-indigo-100 transition-colors">
                             {formatThaiDate(bothResult.prisonReleaseDate)}
                           </span>
                         </div>
-                        <div className="p-4 bg-white/60 rounded-xl">
-                          <span className="text-indigo-600 font-medium text-sm flex items-center justify-center gap-1.5 mb-2">
+                        <div className="p-4 bg-white/60 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-700 transition-colors">
+                          <span className="text-indigo-600 dark:text-indigo-400 font-medium text-sm flex items-center justify-center gap-1.5 mb-2 transition-colors">
                             <Coins className="w-4 h-4" />
                             กักขังแทนค่าปรับ
                           </span>
-                          <span className="text-xl font-bold text-indigo-900">
+                          <span className="text-xl font-bold text-indigo-900 dark:text-indigo-100 transition-colors">
                             {bothResult.fineDays > 0 ? `${bothResult.fineDays.toLocaleString()} วัน` : 'ไม่มี'}
                           </span>
                         </div>
                       </div>
 
-                      <div className="pt-4 border-t border-indigo-200/50 w-full">
-                        <span className="text-indigo-600 font-medium flex items-center justify-center gap-2 mb-2">
+                      <div className="pt-4 border-t border-indigo-200/50 dark:border-indigo-500/20 w-full transition-colors">
+                        <span className="text-indigo-600 dark:text-indigo-400 font-medium flex items-center justify-center gap-2 mb-2 transition-colors">
                           <Calendar className="w-5 h-5" />
                           กำหนดวันพ้นโทษ (สุทธิ)
                         </span>
-                        <span className="text-3xl font-bold text-indigo-900">
+                        <span className="text-3xl font-bold text-indigo-900 dark:text-indigo-100 transition-colors">
                           {formatThaiDate(bothResult.finalReleaseDate)}
                         </span>
                       </div>
@@ -554,21 +554,21 @@ export default function App() {
                   </motion.div>
                 )}
                 
-                <div className="flex gap-3 items-start p-4 bg-slate-50 rounded-xl text-sm text-slate-600">
-                  <Info className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                <div className="flex gap-3 items-start p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm text-slate-600 dark:text-slate-400 transition-colors">
+                  <Info className="w-5 h-5 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
                   <p>
-                    <strong className="font-semibold text-slate-700">หลักการคำนวณ:</strong><br />
+                    <strong className="font-semibold text-slate-700 dark:text-slate-300">หลักการคำนวณ:</strong><br />
                     - <strong className="font-medium">ม. 29 วรรคสาม:</strong> ให้นับระยะเวลากักขังแทนค่าปรับติดต่อกับกำหนดเวลาจำคุก<br />
                     - <strong className="font-medium">ม. 22:</strong> ให้นำวันต้องขังหักออกจากเวลาจำคุก หากมีเศษให้นำไปหักออกจากค่าปรับ (เครื่องมือนี้จะนำไปหักอัตโนมัติ)<br />
-                    <span className="text-slate-800 font-medium mt-1 inline-block">* ระบบคำนวณแสดงผลลัพธ์เป็น "วันที่ต้องปล่อยตัวจริง" (วันรุ่งขึ้นหลังจากครบกำหนดโทษ) ให้แล้ว</span>
+                    <span className="text-slate-800 dark:text-slate-200 font-medium mt-1 inline-block">* ระบบคำนวณแสดงผลลัพธ์เป็น "วันที่ต้องปล่อยตัวจริง" (วันรุ่งขึ้นหลังจากครบกำหนดโทษ) ให้แล้ว</span>
                   </p>
                 </div>
 
                 {bothResult && bothResult.fineDays > 365 && (
-                  <div className="flex gap-3 items-start p-4 bg-orange-50 border border-orange-100 rounded-xl text-sm text-orange-800">
-                    <AlertTriangle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
+                  <div className="flex gap-3 items-start p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-500/30 rounded-xl text-sm text-orange-800 dark:text-orange-300 transition-colors">
+                    <AlertTriangle className="w-5 h-5 text-orange-500 dark:text-orange-400 shrink-0 mt-0.5" />
                     <p>
-                      <strong className="font-semibold text-orange-900">ข้อควรระวัง (กักขังเกิน 1 ปี):</strong><br />
+                      <strong className="font-semibold text-orange-900 dark:text-orange-200">ข้อควรระวัง (กักขังเกิน 1 ปี):</strong><br />
                       การกักขังแทนค่าปรับปกติไม่เกิน 1 ปี (เว้นแต่ปรับ 80,000 บาทขึ้นไป ศาลอาจสั่งให้กักขังเกิน 1 ปีแต่ไม่เกิน 2 ปีได้)
                     </p>
                   </div>
