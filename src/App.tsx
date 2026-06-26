@@ -26,7 +26,8 @@ const calculateImprisonmentRelease = (start: string, y: number, m: number, d: nu
   }
 
   // According to Thai Penal Code Section 21: 1 month = 30 days
-  const additionalDays = (m * 30) + d - 1 - deduct; // -1 because the start day counts as day 1
+  // We do NOT subtract 1 here because release is the day AFTER the sentence is completed
+  const additionalDays = (m * 30) + d - deduct; 
   releaseDate.setDate(releaseDate.getDate() + additionalDays);
 
   return releaseDate;
@@ -41,7 +42,8 @@ const calculateConfinement = (fine: number, rate: number, start: string, deduct:
     const startDate = new Date(start);
     if (!isNaN(startDate.getTime())) {
       releaseDate = new Date(startDate);
-      releaseDate.setDate(releaseDate.getDate() + days - 1); // -1 because start day counts
+      // We do NOT subtract 1 here because release is the day AFTER the confinement is completed
+      releaseDate.setDate(releaseDate.getDate() + days); 
     }
   }
   return { days, releaseDate, baseDays };
@@ -284,7 +286,7 @@ export default function App() {
                   <Info className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
                   <p>
                     <strong className="font-semibold text-slate-700">หลักการคำนวณตาม ป.อ. มาตรา 21:</strong><br />
-                    การนับระยะเวลาให้นับเป็นวัน ถ้านับเป็นเดือนให้ถือว่า 1 เดือนมี 30 วัน ถ้านับเป็นปีให้คำนวณตามปีปฏิทิน และให้นับวันเริ่มจำคุกรวมเข้าด้วย (ลบออก 1 วันในการหาวันพ้นโทษ)
+                    การนับระยะเวลาให้นับเป็นวัน ถ้านับเป็นเดือนให้ถือว่า 1 เดือนมี 30 วัน ถ้านับเป็นปีให้คำนวณตามปีปฏิทิน และให้นับวันเริ่มจำคุกรวมเข้าด้วย <strong className="text-slate-800">โดยการปล่อยตัวจะปล่อยในวันถัดจากวันที่ครบกำหนดโทษ</strong> (ระบบนี้คำนวณแสดงเป็นวันที่ต้องปล่อยตัวจริงให้แล้ว)
                   </p>
                 </div>
               </motion.div>
@@ -394,7 +396,7 @@ export default function App() {
                     <Info className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
                     <p>
                       <strong className="font-semibold text-slate-700">หลักการคำนวณตาม ป.อ. มาตรา 29:</strong><br />
-                      ให้ถืออัตรา 500 บาท ต่อ 1 วัน เศษของวันให้ปัดเป็นหนึ่งวัน (เว้นแต่ศาลจะสั่งเป็นอย่างอื่น)
+                      ให้ถืออัตรา 500 บาท ต่อ 1 วัน เศษของวันให้ปัดเป็นหนึ่งวัน <strong className="text-slate-800">โดยการปล่อยตัวจะปล่อยในวันถัดจากวันที่ครบกำหนดกักขัง</strong> (ระบบแสดงเป็นวันที่พ้นกักขังจริง)
                     </p>
                   </div>
                   
@@ -557,7 +559,8 @@ export default function App() {
                   <p>
                     <strong className="font-semibold text-slate-700">หลักการคำนวณ:</strong><br />
                     - <strong className="font-medium">ม. 29 วรรคสาม:</strong> ให้นับระยะเวลากักขังแทนค่าปรับติดต่อกับกำหนดเวลาจำคุก<br />
-                    - <strong className="font-medium">ม. 22:</strong> ให้นำวันต้องขังหักออกจากเวลาจำคุก หากมีเศษให้นำไปหักออกจากค่าปรับ (เครื่องมือนี้จะนำไปหักอัตโนมัติในวันพ้นโทษสุทธิ)
+                    - <strong className="font-medium">ม. 22:</strong> ให้นำวันต้องขังหักออกจากเวลาจำคุก หากมีเศษให้นำไปหักออกจากค่าปรับ (เครื่องมือนี้จะนำไปหักอัตโนมัติ)<br />
+                    <span className="text-slate-800 font-medium mt-1 inline-block">* ระบบคำนวณแสดงผลลัพธ์เป็น "วันที่ต้องปล่อยตัวจริง" (วันรุ่งขึ้นหลังจากครบกำหนดโทษ) ให้แล้ว</span>
                   </p>
                 </div>
 
