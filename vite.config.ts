@@ -11,14 +11,36 @@ export default defineConfig(() => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['icon.svg'],
+        injectRegister: 'script',
+        includeAssets: ['icon.svg', 'apple-touch-icon.png'],
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                },
+                cacheableResponse: {
+                  statuses: [0, 200]
+                }
+              }
+            }
+          ]
+        },
         manifest: {
           name: 'เครื่องมือคำนวณวันรับโทษ',
           short_name: 'คำนวณรับโทษ',
           description: 'ระบบคำนวณวันจำคุกและวันกักขังแทนค่าปรับ อ้างอิงตามประมวลกฎหมายอาญาไทย',
-          theme_color: '#ffffff',
-          background_color: '#f8fafc',
+          theme_color: '#4f46e5',
+          background_color: '#0f172a',
           display: 'standalone',
+          start_url: '/',
+          scope: '/',
           icons: [
             {
               src: '/icon.svg',

@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Scale, Calendar, Calculator, Info, AlertTriangle, CalendarDays, Coins } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Scale, Calendar, Calculator, Info, AlertTriangle, CalendarDays, Coins, Download, WifiOff, CheckCircle2, Share2, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const thaiMonths = [
@@ -74,6 +74,57 @@ export default function App() {
   const [bothFineAmount, setBothFineAmount] = useState<number | ''>('');
   const [bothFineRate, setBothFineRate] = useState<number>(500);
 
+  // PWA & Offline State
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [showIOSPrompt, setShowIOSPrompt] = useState(false);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+    };
+
+    const handleOnlineStatus = () => setIsOffline(!navigator.onLine);
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener('online', handleOnlineStatus);
+    window.addEventListener('offline', handleOnlineStatus);
+
+    if (window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone) {
+      setIsInstalled(true);
+    }
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    if (isIOS && !window.matchMedia('(display-mode: standalone)').matches) {
+      setShowIOSPrompt(true);
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener('online', handleOnlineStatus);
+      window.removeEventListener('offline', handleOnlineStatus);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setIsInstalled(true);
+    }
+    setDeferredPrompt(null);
+  };
+
   // Calculations
   const prisonResult = useMemo(() => {
     return calculateImprisonmentRelease(
@@ -141,6 +192,55 @@ export default function App() {
             เครื่องมือช่วยคำนวณกำหนดวันพ้นโทษตามประมวลกฎหมายอาญา มาตรา 21 (ให้นับ 1 เดือนเท่ากับ 30 วัน) และคำนวณจำนวนวันกักขังแทนค่าปรับตามมาตรา 29
           </p>
         </header>
+
+        {/* Offline Status & PWA Install Banner */}
+        <div className="space-y-3">
+          {isOffline && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center justify-center gap-2 p-3 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 rounded-xl text-sm font-medium transition-colors"
+            >
+              <WifiOff className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <span>กำลังใช้งานในโหมด Offline (คำนวณได้ตามปกติโดยไม่ต้องเชื่อมต่ออินเทอร์เน็ต)</span>
+            </motion.div>
+          )}
+
+          {deferredPrompt && !isInstalled && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-gradient-to-r from-indigo-600 to-indigo-700 dark:from-indigo-700 dark:to-indigo-800 text-white rounded-2xl shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-white/20 rounded-xl shrink-0">
+                  <Smartphone className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <div className="font-bold text-base">ติดตั้งแอปไว้บนอุปกรณ์ (Offline PWA)</div>
+                  <div className="text-xs text-indigo-100 mt-0.5">ใช้งานได้ทันทีแม้ไม่มีอินเทอร์เน็ต เรียกใช้สะดวกจากหน้าจอโฮม</div>
+                </div>
+              </div>
+              <button
+                onClick={handleInstallClick}
+                className="w-full sm:w-auto px-5 py-2.5 bg-white text-indigo-700 hover:bg-indigo-50 font-semibold rounded-xl text-sm shadow transition-colors flex items-center justify-center gap-2 shrink-0"
+              >
+                <Download className="w-4 h-4" />
+                ติดตั้งแอป
+              </button>
+            </motion.div>
+          )}
+
+          {showIOSPrompt && !isInstalled && (
+            <div className="p-4 bg-indigo-50/80 dark:bg-slate-800/80 border border-indigo-100 dark:border-slate-700 rounded-xl text-xs text-slate-700 dark:text-slate-300 flex items-start gap-3 transition-colors">
+              <Share2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-slate-900 dark:text-slate-100">ติดตั้งบน iPhone / iPad:</span>
+                <p className="mt-0.5">แตะปุ่มแชร์ <Share2 className="w-3.5 h-3.5 inline mx-0.5 text-indigo-600 dark:text-indigo-400" /> ใน Safari แล้วเลือก <strong className="text-indigo-700 dark:text-indigo-300">"เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</strong> เพื่อเปิดใช้งานแบบ Offline</p>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Tab Navigation */}
         <div className="flex bg-slate-200/60 dark:bg-slate-800/60 p-1 rounded-xl transition-colors">
