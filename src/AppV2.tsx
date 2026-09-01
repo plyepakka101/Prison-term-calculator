@@ -146,19 +146,19 @@ export default function AppV2() {
           </div>
           <p className="notice mt-4">
             {daysFromRange !== null
-              ? `คำนวณจากช่วงวันที่ = ${daysFromRange} วัน (นับวันแรกเป็น 1 วัน) — ล้างช่องวันที่หากต้องการกรอกจำนวนวันเอง`
+              ? `คำนวณจากช่วงวันที่ = ${daysFromRange} วัน (นับวันแรกเป็น 1 วัน) — ล้างช่องวันท[...]
               : 'ยังไม่ได้ระบุช่วงวันที่ ระบบใช้จำนวนวันที่กรอกเอง'}
             {needsPrison
-              ? ' • ระบบจะนำวันคุมขังก่อนพิพากษาไปหักโทษจำคุกก่อน แล้วจึงนำวันที่เหลือมาหักค่าปรับ'
-              : ' • ระบบจะนำวันคุมขังก่อนพิพากษามาหักจากวันกักขังแทนค่าปรับโดยตรง'}
+              ? ' • ระบบจะนำวันคุมขังก่อนพิพากษาไปหักโทษจำคุกก่อน แล้วจึงนำวัน�[...]
+              : ' • ระบบจะนำวันคุมขังก่อนพิพากษามาหักจากวันกักขังแทนค่าปรับโด��[...]
           </p>
         </section>
 
         <section className="card">
           <h2>ข้อมูลค่าปรับ</h2>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Field label="ค่าปรับตามคำพิพากษา"><input type="number" min="0" value={fineAmount} onChange={e => setFineAmount(Math.max(0, Number(e.target.value) || 0))} /></Field>
-            <Field label="ชำระก่อนเริ่มกักขัง"><input type="number" min="0" value={paidBefore} onChange={e => setPaidBefore(Math.max(0, Number(e.target.value) || 0))} /></Field>
+            <Field label="ค่าปรับตามคำพิพากษา"><input type="number" min="0" value={fineAmount} onChange={e => setFineAmount(Math.max(0, Number(e.target.value || 0)))} /></Field>
+            <Field label="ชำระก่อนเริ่มกักขัง"><input type="number" min="0" value={paidBefore} onChange={e => setPaidBefore(Math.max(0, Number(e.target.value || 0)))} /></Field>
             <Field label="อัตรา 1 วัน (บาท)"><input type="number" min="1" value={rate} onChange={e => setRate(Math.max(1, Number(e.target.value) || 500))} /></Field>
           </div>
         </section>
@@ -169,7 +169,7 @@ export default function AppV2() {
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="วันที่เริ่มกักขัง"><input type="date" value={confinementStart} onChange={e => setConfinementStart(e.target.value)} /></Field>
               <Field label="วันที่ตรวจสอบ / วันที่มาชำระ"><input type="date" value={checkDate} onChange={e => setCheckDate(e.target.value)} /></Field>
-              <Field label="ชำระเงินวันนี้"><input type="number" min="0" value={paidToday} onChange={e => setPaidToday(Math.max(0, Number(e.target.value) || 0))} /></Field>
+              <Field label="ชำระเงินวันนี้"><input type="number" min="0" value={paidToday} onChange={e => setPaidToday(Math.max(0, Number(e.target.value || 0)))} /></Field>
               <Field label="เพดานการกักขัง">
                 <select value={maxConfinementYears} onChange={e => setMaxConfinementYears(Number(e.target.value) as 1 | 2)}>
                   <option value="1">ไม่เกิน 1 ปี</option>
@@ -180,18 +180,18 @@ export default function AppV2() {
 
             {/* สรุปการหักวันขังก่อนพิพากษา */}
             <div className="mt-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 p-4 space-y-1 text-sm">
-              <div>ค่าปรับ {money(Math.max(0, fineAmount - paidBefore))} คิดอัตรา {rate.toLocaleString('th-TH')} บาท/วัน เท่ากับกักขัง <strong>{grossConfinementDays} วัน</strong></div>
+              <div>ค่าปรับ {money(Math.max(0, fineAmount - paidBefore))} คิดอัตรา {rate.toLocaleString('th-TH')} บาท/วัน เท่ากับกัก��[...]
               <div>หักวันคุมขังก่อนพิพากษา <strong>{creditDaysUsed} วัน</strong> (คิดเป็น {money(creditDaysUsed * rate)})</div>
               {noConfinementLeft ? (
                 <div className="font-semibold text-emerald-700 dark:text-emerald-300">ไม่เหลือวันกักขังแทนค่าปรับ</div>
               ) : (
-                <div className="font-semibold">คงเหลือกักขัง <strong>{netConfinementDays} วัน</strong> หรือคิดเป็นค่าปรับคงเหลือประมาณ {money(netConfinementDays * rate)}</div>
+                <div className="font-semibold">คงเหลือกักขัง <strong>{netConfinementDays} วัน</strong> หรือคิดเป็นค่าปรับคง[...]
               )}
             </div>
 
             <p className="notice mt-3">
               {fineAmount >= 200000
-                ? 'ค่าปรับตั้งแต่ 200,000 บาทขึ้นไป: โปรดตรวจสอบคำสั่งศาลและเพดานการกักขังของคดี'
+                ? 'ค่าปรับตั้งแต่ 200,000 บาทขึ้นไป: โปรดตรวจสอบคำสั่งศาลและเพดานการก[...]
                 : 'ค่าปรับต่ำกว่า 200,000 บาท: ระบบตั้งค่าเพดานเริ่มต้น 1 ปี'}
             </p>
           </section>
@@ -230,11 +230,11 @@ export default function AppV2() {
                   label="กักขังแทนค่าปรับคงเหลือ"
                   value={noConfinementLeft ? 'ไม่เหลือวันกักขังแทนค่าปรับ' : `${result.confinement.remainingDays} วัน`}
                 />
-                <Result label="วันสิ้นสุดกักขังโดยประมาณ" value={result.confinement.projectedEnd ? formatThaiDate(result.confinement.projectedEnd) : 'ชำระครบแล้ว'} />
+                <Result label="วันสิ้นสุดกักขังโดยประมาณ" value={result.confinement.projectedEnd ? formatThaiDate(result.confinement.projectedEnd as any) : '-'} />
               </>
             )}
             {needsPrison && (
-              <Result label="กำหนดสิ้นสุดจำคุกโดยประมาณ" value={result.sentence.projectedRelease ? formatThaiDate(result.sentence.projectedRelease) : 'ระบุวันเริ่มจำคุก'} />
+              <Result label="กำหนดสิ้นสุดจำคุกโดยประมาณ" value={result.sentence.projectedRelease ? formatThaiDate(result.sentence.projectedRelease as any) : '-'} />
             )}
           </div>
         </section>
@@ -243,23 +243,23 @@ export default function AppV2() {
           <h2>ลำดับการคำนวณ</h2>
           <ol className="list-decimal pl-5 space-y-2 text-sm text-slate-600">
             <li>ค่าปรับตามคำพิพากษา หักเงินที่ชำระก่อนเริ่มกักขัง</li>
-            <li>แปลงค่าปรับคงเหลือเป็นวันกักขังที่อัตรา {rate.toLocaleString('th-TH')} บาท/วัน (ปัดเศษขึ้น)</li>
-            {needsPrison && <li>วันคุมขังก่อนพิพากษาถูกจัดสรรเข้าหักโทษจำคุกก่อน แล้ววันที่เหลือจึงเป็นเครดิตค่าปรับ</li>}
-            {!needsPrison && <li>วันคุมขังก่อนพิพากษาถูกนำมาหักจากวันกักขังแทนค่าปรับโดยตรง</li>}
-            {needsConfinement && <li>คำนวณเครดิตจากการกักขังจริงถึงวันตรวจสอบ แล้วหักเงินที่ชำระวันนี้</li>}
-            <li>ค่าปรับคงเหลือหารด้วยอัตราต่อวัน แล้วปัดเศษขึ้นเป็นวันกักขังที่เหลือ</li>
+            <li>แปลงค่าปรับคงเหลือเป็นวันกักขังที่อัตรา {rate.toLocaleString('th-TH')} บาท/วัน (ปัดเ��[...]
+            {needsPrison && <li>วันคุมขังก่อนพิพากษาถูกจัดสรรเข้าหักโทษจำคุกก่อน แล้ววัน��[...]
+            {!needsPrison && <li>วันคุมขังก่อนพิพากษาถูกนำมาหักจากวันกักขังแทนค่าปรับโดย��[...]
+            {needsConfinement && <li>คำนวณเครดิตจากการกักขังจริงถึงวันตรวจสอบ แล้วหักเงินที่[...]
+            <li>ค่าปรับคงเหลือหารด้วยอัตราต่อวัน แล้วปัดเศษขึ้นเป็นวันกักขังที[...]
           </ol>
         </section>
 
         {needsConfinement && result.confinement.remainingDays > result.confinement.maximumDays && (
           <div className="warning">
             <AlertTriangle size={20} />
-            <span>ผลคำนวณเกินเพดาน {maxConfinementYears} ปี ต้องตรวจสอบคำพิพากษาและกฎหมายที่ใช้บังคับ</span>
+            <span>ผลคำนวณเกินเพดาน {maxConfinementYears} ปี ต้องตรวจสอบคำพิพากษาและกฎหมายที่ใ[...]
           </div>
         )}
 
         <footer className="text-xs text-slate-500 text-center pb-8">
-          เครื่องมือช่วยคำนวณเบื้องต้น ไม่ใช่คำวินิจฉัยทางกฎหมาย ต้องตรวจสอบคำพิพากษา หมายจำคุก หมายกักขัง และแนวปฏิบัติก่อนใช้เป็นทางการ
+          เครื่องมือช่วยคำนวณเบื้องต้น ไม่ใช่คำวินิจฉัยทางกฎหมาย ต้องตรวจ[...]
         </footer>
       </div>
     </div>
