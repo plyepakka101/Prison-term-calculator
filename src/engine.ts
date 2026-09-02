@@ -7,7 +7,7 @@ const DAY_MS=86400000; const clamp=(n:number)=>Math.max(0,Number.isFinite(n)?n:0
 export const formatSentence=(s:SentenceInput)=>`${s.years||0} ปี ${s.months||0} เดือน ${s.days||0} วัน`;
 export const parseLocalDate=(v:string)=>{if(!v)return null;const d=new Date(`${v}T00:00:00`);return Number.isNaN(d.getTime())?null:d};
 export const formatThaiDate=(d:Date|null)=>d?d.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'}):'-';
-export const inclusiveDays=(a:Date|null,b:Date|null)=>!a||!b||b<a?0:Math.floor((b.getTime()-a.getTime())/DAY_MS)+1;
+export const inclusiveDays=(a:Date|null,b:Date|null)=>!a||!b||b<a?0:Math.floor((b.getTime()-a.getTime())/DAY_MS);
 export const addSentence=(start:Date|null,s:SentenceInput)=>{if(!start)return null;const d=new Date(start);d.setFullYear(d.getFullYear()+clamp(s.years));d.setMonth(d.getMonth()+clamp(s.months));d.setDate(d.getDate()+clamp(s.days));return d};
 
 /** Single business engine used by every UI mode. */
@@ -35,5 +35,5 @@ export function calculateCase(input:CalculationInput){
   // ✅ FIX 3: คำนวณวันพ้นโทษจำคุกอย่างถูกต้อง - หักวันคุมขังก่อนพิพากษาออกจากจำนวนวันโทษที่ต้องรับ
   const netImprisonmentDays=input.mode==='fine'?0:Math.max(0,allocationDays-imprisonmentCreditDays);
   const projectedImprisonmentRelease=imprisonmentStart&&input.mode!=='fine'?new Date(imprisonmentStart.getTime()+netImprisonmentDays*DAY_MS):null;
-  return {mode:input.mode,sentence:{...input.sentence,nominalAllocationDays:allocationDays,pretrialDays,imprisonmentCreditDays,remainingPretrialDays,statutoryEnd,projectedRelease:projectedImprisonmentRelease},fine:{initialRemaining,amount:fineAmount,paidBefore,pretrialFineCredit,confinementCredit,paidToday,remaining:fineRemaining},confinement:{elapsedDays,remainingDays,maxDays:maximumDays,exceedsMaximum,projectedEnd},status:fineRemaining===0&&(input.mode==='fine'||!needsConfinement)?'PAID':'PENDING'};
+  return {mode:input.mode,sentence:{...input.sentence,nominalAllocationDays:allocationDays,pretrialDays,imprisonmentCreditDays,remainingPretrialDays,statutoryEnd,projectedRelease:projectedImprisonmentRelease},fine:{initialRemaining:initialFineRemaining,amount:fineAmount,paidBefore,pretrialFineCredit,confinementCredit,paidToday,remaining:fineRemaining},confinement:{elapsedDays,remainingDays,maxDays:maximumDays,exceedsMaximum,projectedEnd},status:fineRemaining===0&&(input.mode==='fine'||!needsConfinement)?'PAID':'PENDING'};
 }
