@@ -18,7 +18,7 @@ const base = {
 {
   const r = calculateCase({ ...base, mode: 'fine' });
   assert.equal(r.fine.remaining, 100000);
-  assert.equal(r.confinement.remainingDays, 0, 'fine-only mode does not project post-check confinement until an explicit confinement period is entered');
+  assert.equal(r.confinement.remainingDays, 200, 'no confinement day has elapsed yet (start date === check date), so full 200 days remain uncredited');
 }
 
 // 2) จำคุกและปรับ: วันคุมขังก่อนพิพากษาถูกจัดสรรเข้าจำคุกก่อน
@@ -29,14 +29,14 @@ const base = {
   assert.equal(r.fine.pretrialFineCredit, 0);
 }
 
-// 3) จำคุกและกักขังแทนค่าปรับ: 10 วันกักขัง = เครดิต 5,000 บาท; ชำระเพิ่ม 10,000 => เหลือ 85,000 = 170 วัน
+// 3) จำคุกและกักขังแทนค่าปรับ: เริ่ม 1 ก.ย. ถึง 10 ก.ย. = 9 วันที่ครบแล้ว (ไม่นับวันแรกเป็นเครดิต) = เครดิต 4,500 บาท; ชำระเพิ่ม 10,000 => เหลือ 85,500 = 171 วัน
 {
   const r = calculateCase({ ...base, mode: 'imprisonConfinement', sentence: { years: 1, months: 0, days: 0 }, pretrialDays: 0, confinementStart: '2026-09-01', checkDate: '2026-09-10', paidToday: 10000 });
-  assert.equal(r.confinement.elapsedDays, 10);
-  assert.equal(r.fine.confinementCredit, 5000);
+  assert.equal(r.confinement.elapsedDays, 9);
+  assert.equal(r.fine.confinementCredit, 4500);
   assert.equal(r.fine.paidToday, 10000);
-  assert.equal(r.fine.remaining, 85000);
-  assert.equal(r.confinement.remainingDays, 170);
+  assert.equal(r.fine.remaining, 85500);
+  assert.equal(r.confinement.remainingDays, 171);
 }
 
 // Date validation: check date before start must not produce negative elapsed days.
