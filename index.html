@@ -357,11 +357,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="startDate">วันเริ่มถูกคุมขัง / ฝากขัง</label>
-                        <input type="date" id="startDate" value="2026-08-29" onchange="calculate()">
+                        <input type="date" id="startDate" onchange="calculate()">
                     </div>
                     <div class="form-group">
                         <label for="sentenceDate">วันที่ศาลมีคำพิพากษา</label>
-                        <input type="date" id="sentenceDate" value="2026-08-29" onchange="calculate()">
+                        <input type="date" id="sentenceDate" onchange="calculate()">
                     </div>
                 </div>
             </div>
@@ -392,7 +392,7 @@
                     <div class="form-row" style="margin-top: 12px;">
                         <div class="form-group">
                             <label for="prisonDays">กำหนดโทษจำคุก (วัน)</label>
-                            <input type="number" id="prisonDays" value="30" min="0" oninput="calculate()">
+                            <input type="number" id="prisonDays" value="0" min="0" oninput="calculate()">
                         </div>
                         <div class="form-group">
                         </div>
@@ -405,7 +405,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="totalFine">ค่าปรับตามคำพิพากษา (บาท)</label>
-                            <input type="number" id="totalFine" value="4000" step="100" oninput="calculate()">
+                            <input type="number" id="totalFine" value="0" step="100" oninput="calculate()">
                         </div>
                         <div class="form-group">
                             <label for="paidBefore">ชำระแล้วก่อนหน้านี้ (บาท)</label>
@@ -439,11 +439,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="confinementStart">วันที่เริ่มกักขังจริง</label>
-                        <input type="date" id="confinementStart" value="2026-08-29" onchange="calculate()">
+                        <input type="date" id="confinementStart" onchange="calculate()">
                     </div>
                     <div class="form-group">
                         <label for="checkDate">วันที่ตรวจสอบ / ชำระเงิน</label>
-                        <input type="date" id="checkDate" value="2026-09-02" onchange="calculate()">
+                        <input type="date" id="checkDate" onchange="calculate()">
                     </div>
                 </div>
                 <div class="form-row">
@@ -459,7 +459,7 @@
                 </div>
             </div>
             <div class="info-box">
-                ⏱️ กักขังไปแล้ว: <strong id="daysServedText">5 วัน</strong> (คิดเป็นมูลค่า <strong id="amountDeductedText">2,500 บาท</strong>)
+                ⏱️ กักขังไปแล้ว: <strong id="daysServedText">0 วัน</strong> (คิดเป็นมูลค่า <strong id="amountDeductedText">0 บาท</strong>)
             </div>
         </div>
 
@@ -474,11 +474,11 @@
                 <div class="form-row">
                     <div class="result-item">
                         <div class="result-label">ค่าปรับคงเหลือที่ต้องชำระ</div>
-                        <div class="result-value" id="resRemainingFine">1,500 บาท</div>
+                        <div class="result-value" id="resRemainingFine">0 บาท</div>
                     </div>
                     <div class="result-item">
                         <div class="result-label">ต้องกักขังแทนค่าปรับคงเหลืออีก</div>
-                        <div class="result-value" id="resRemainingDays">3 วัน</div>
+                        <div class="result-value" id="resRemainingDays">0 วัน</div>
                     </div>
                 </div>
             </div>
@@ -662,18 +662,28 @@
 
         function resetForm() {
             document.getElementById('mode1').checked = true;
-            document.getElementById('startDate').value = '2026-08-29';
-            document.getElementById('sentenceDate').value = '2026-08-29';
-            document.getElementById('totalFine').value = 4000;
+            
+            // ตั้งค่าเป็นวันที่ปัจจุบัน
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('sentenceDate').value = today;
+            document.getElementById('confinementStart').value = today;
+            document.getElementById('checkDate').value = today;
+
+            // ล้างค่าอินพุตทั้งหมดให้เป็น 0
+            document.getElementById('prisonYears').value = 0;
+            document.getElementById('prisonMonths').value = 0;
+            document.getElementById('prisonDays').value = 0;
+            document.getElementById('totalFine').value = 0;
             document.getElementById('paidBefore').value = 0;
             document.getElementById('payToday').value = 0;
+
             toggleMode();
             calculate();
         }
 
         window.onload = () => {
-            toggleMode();
-            calculate();
+            resetForm();
         };
     </script>
 </body>
