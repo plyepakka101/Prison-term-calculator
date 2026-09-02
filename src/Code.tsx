@@ -251,7 +251,7 @@ export default function AppV2() {
           </ol>
         </section>
 
-        {needsConfinement && result.confinement.remainingDays > result.confinement.maximumDays && (
+        {needsConfinement && result.confinement.exceedsMaximum && (
           <div className="warning">
             <AlertTriangle size={20} />
             <span>ผลคำนวณเกินเพดาน {maxConfinementYears} ปี ต้องตรวจสอบคำพิพากษาและกฎหมายที่ใช้บังคับ</span>
