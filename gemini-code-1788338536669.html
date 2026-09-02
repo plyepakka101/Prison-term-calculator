@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบคำนวณวันต้องโทษ (Legal Term Calculator)</title>
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-hover: #1e40af;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --accent-gold: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 50px;
+            line-height: 1.5;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: #93c5fd;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+        }
+
+        .step-badge {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            font-size: 0.85rem;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-table;
+            text-align: center;
+            line-height: 28px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .radio-group {
+            display: table;
+            width: 100%;
+            border-spacing: 10px;
+            margin: -10px;
+        }
+
+        .radio-option {
+            display: table-cell;
+            width: 33.33%;
+            vertical-align: top;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-label {
+            display: block;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 100%;
+            background-color: #fff;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label {
+            border-color: var(--primary-color);
+            background-color: #eff6ff;
+        }
+
+        .radio-title {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .radio-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .form-grid {
+            display: table;
+            width: 100%;
+            border-spacing: 12px;
+            margin: -12px;
+        }
+
+        .form-row {
+            display: table-row;
+        }
+
+        .form-group {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+            padding: 4px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: #fff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        .info-box {
+            background-color: #f1f5f9;
+            border-left: 4px solid var(--primary-color);
+            padding: 10px 14px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.85rem;
+            color: #334155;
+            margin-top: 12px;
+        }
+
+        .results-card {
+            background: linear-gradient(to bottom, #ffffff, #f8fafc);
+            border: 2px solid #cbd5e1;
+        }
+
+        .result-grid {
+            display: table;
+            width: 100%;
+            border-spacing: 12px;
+            margin: -12px;
+        }
+
+        .result-item {
+            display: table-cell;
+            width: 50%;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .result-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .result-value.highlight {
+            color: var(--accent-gold);
+            font-size: 1.6rem;
+        }
+
+        .summary-banner {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .summary-banner h4 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .summary-banner ul {
+            padding-left: 20px;
+            font-size: 0.875rem;
+            color: #1e293b;
+        }
+
+        .summary-banner li {
+            margin-bottom: 4px;
+        }
+
+        .legal-note {
+            background-color: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 0.825rem;
+            color: #92400e;
+            margin-top: 20px;
+        }
+
+        .legal-note strong {
+            color: #b45309;
+        }
+
+        .btn-reset {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            float: right;
+            margin-top: -4px;
+        }
+
+        .btn-reset:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 640px) {
+            .radio-group, .form-grid, .result-grid {
+                display: block;
+                width: 100%;
+                margin: 0;
+            }
+            .radio-option, .form-group, .result-item {
+                display: block;
+                width: 100%;
+                margin-bottom: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="max-width: 850px; margin: 0 auto; text-align: left;">
+            <button class="btn-reset" onclick="resetForm()">🔄 เริ่มคำนวณใหม่</button>
+            <h1>⚖️ ระบบคำนวณวันต้องโทษ (Legal Term Calculator)</h1>
+            <p>คำนวณวันจำคุก กักขังแทนค่าปรับ และวันพ้นโทษตามกฎหมายอาญา</p>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 01: เลือกประเภทการคำนวณ -->
+        <div class="card">
+            <div class="card-header">
+                <span class="step-badge">01</span>
+                <span class="card-title">เลือกประเภทการคำนวณ</span>
+            </div>
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" id="mode1" name="calc_mode" value="fine_only" checked onchange="toggleMode(); calculate();">
+                    <label class="radio-label" for="mode1">
+                        <div class="radio-title">กักขังแทนค่าปรับ</div>
+                        <div class="radio-desc">คำนวณวันกักขังจากค่าปรับอย่างเดียว</div>
+                    </label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="mode2" name="calc_mode" value="prison_only" onchange="toggleMode(); calculate();">
+                    <label class="radio-label" for="mode2">
+                        <div class="radio-title">จำคุกอย่างเดียว</div>
+                        <div class="radio-desc">คำนวณวันพ้นโทษจากกำหนดโทษจำคุก</div>
+                    </label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="mode3" name="calc_mode" value="prison_fine" onchange="toggleMode(); calculate();">
+                    <label class="radio-label" for="mode3">
+                        <div class="radio-title">จำคุกและกักขังแทนค่าปรับ</div>
+                        <div class="radio-desc">มีทั้งโทษจำคุกและกักขังแทนค่าปรับ</div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 02: การคุมขังก่อนพิพากษา -->
+        <div class="card">
+            <div class="card-header">
+                <span class="step-badge">02</span>
+                <span class="card-title">การคุมขัง / ฝากขังก่อนพิพากษา</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startDate">วันเริ่มถูกคุมขัง / ฝากขัง</label>
+                        <input type="date" id="startDate" value="2026-08-29" onchange="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label for="sentenceDate">วันที่ศาลมีคำพิพากษา</label>
+                        <input type="date" id="sentenceDate" value="2026-08-29" onchange="calculate()">
+                    </div>
+                </div>
+            </div>
+            <div class="info-box">
+                📌 ขังก่อนพิพากษา: <strong id="remandDaysText">0 วัน</strong> (นำไปหักลบวันจำคุกได้)
+            </div>
+        </div>
+
+        <!-- 03: ข้อมูลกำหนดโทษ (จำคุก / ค่าปรับ) -->
+        <div class="card" id="cardSection03">
+            <div class="card-header">
+                <span class="step-badge">03</span>
+                <span class="card-title" id="card03Title">ข้อมูลค่าปรับตามคำพิพากษา</span>
+            </div>
+            
+            <div id="prisonSentenceSection" class="hidden" style="margin-bottom: 16px;">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prisonYears">กำหนดโทษจำคุก (ปี)</label>
+                            <input type="number" id="prisonYears" value="0" min="0" oninput="calculate()">
+                        </div>
+                        <div class="form-group">
+                            <label for="prisonMonths">กำหนดโทษจำคุก (เดือน)</label>
+                            <input type="number" id="prisonMonths" value="0" min="0" oninput="calculate()">
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top: 12px;">
+                        <div class="form-group">
+                            <label for="prisonDays">กำหนดโทษจำคุก (วัน)</label>
+                            <input type="number" id="prisonDays" value="30" min="0" oninput="calculate()">
+                        </div>
+                        <div class="form-group">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="fineInfoSection">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="totalFine">ค่าปรับตามคำพิพากษา (บาท)</label>
+                            <input type="number" id="totalFine" value="4000" step="100" oninput="calculate()">
+                        </div>
+                        <div class="form-group">
+                            <label for="paidBefore">ชำระแล้วก่อนหน้านี้ (บาท)</label>
+                            <input type="number" id="paidBefore" value="0" step="100" oninput="calculate()">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ratePerDay">อัตราหักกักขังแทนค่าปรับ (บาท/วัน)</label>
+                            <input type="number" id="ratePerDay" value="500" readonly style="background-color: #f8fafc; color: #64748b;">
+                        </div>
+                        <div class="form-group">
+                            <label for="maxConfinement">เพดานการกักขัง</label>
+                            <select id="maxConfinement" onchange="calculate()">
+                                <option value="365">ไม่เกิน 1 ปี (กรณีทั่วไป)</option>
+                                <option value="730">ไม่เกิน 2 ปี (กรณีโทษปรับเกิน 200,000 บาท)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 04: การกักขังแทนค่าปรับและการตรวจสอบ -->
+        <div class="card" id="cardSection04">
+            <div class="card-header">
+                <span class="step-badge">04</span>
+                <span class="card-title">การกักขังแทนค่าปรับ / วันที่ชำระเพิ่มเติม</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="confinementStart">วันที่เริ่มกักขังจริง</label>
+                        <input type="date" id="confinementStart" value="2026-08-29" onchange="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label for="checkDate">วันที่ตรวจสอบ / ชำระเงิน</label>
+                        <input type="date" id="checkDate" value="2026-09-02" onchange="calculate()">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="payToday">จำนวนเงินที่นำมาชำระ ณ วันที่ตรวจสอบ (บาท)</label>
+                        <input type="number" id="payToday" value="0" step="100" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <div style="padding-top: 25px;">
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">* ระบบจะหักวันกักขังตามจำนวนวันที่ถูกขังจริง</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-box">
+                ⏱️ กักขังไปแล้ว: <strong id="daysServedText">5 วัน</strong> (คิดเป็นมูลค่า <strong id="amountDeductedText">2,500 บาท</strong>)
+            </div>
+        </div>
+
+        <!-- RESULTS SECTION -->
+        <div class="card results-card">
+            <div class="card-header">
+                <span class="step-badge" style="background-color: var(--accent-gold);">✓</span>
+                <span class="card-title" style="color: #b45309;">ผลการคำนวณที่ถูกต้อง</span>
+            </div>
+            
+            <div class="result-grid" id="fineResultGrid">
+                <div class="form-row">
+                    <div class="result-item">
+                        <div class="result-label">ค่าปรับคงเหลือที่ต้องชำระ</div>
+                        <div class="result-value" id="resRemainingFine">1,500 บาท</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">ต้องกักขังแทนค่าปรับคงเหลืออีก</div>
+                        <div class="result-value" id="resRemainingDays">3 วัน</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-grid" style="margin-top: 12px;">
+                <div class="form-row">
+                    <div class="result-item" style="width: 100%;">
+                        <div class="result-label" id="releaseTitleText">วันปล่อยตัว / พ้นโทษ (เช้าวันถัดไป)</div>
+                        <div class="result-value highlight" id="resReleaseDate">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-banner">
+                <h4>📋 สรุปรายละเอียดการคิดคำนวณ:</h4>
+                <ul id="summaryList">
+                    <!-- Populated by JS -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="legal-note">
+            <strong>⚠️ หมายเหตุตามข้อกฎหมาย:</strong><br>
+            1. การนับวันต้องโทษให้นับวันที่เริ่มถูกคุมขังเป็น 1 วันเต็มทันที<br>
+            2. หากวันเริ่มขังตรงกับวันพิพากษา จะถือเป็นวันเริ่มรับโทษตามคำพิพากษา (ไม่มีวันขังก่อนพิพากษา)<br>
+            3. ผู้ต้องขัง/ผู้ถูกกักขังจะได้รับการปล่อยตัวใน <strong>วันถัดไปถัดจากวันครบกำหนดโทษ</strong>
+        </div>
+
+    </div>
+
+    <script>
+        function formatDateThai(dateObj) {
+            if (!dateObj || isNaN(dateObj.getTime())) return "-";
+            const thaiMonths = [
+                "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+            ];
+            return `${dateObj.getDate()} ${thaiMonths[dateObj.getMonth()]} ${dateObj.getFullYear() + 543}`;
+        }
+
+        function diffInDaysInclusive(d1, d2) {
+            if (d2 < d1) return 0;
+            const msPerDay = 24 * 60 * 60 * 1000;
+            const date1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+            const date2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+            return Math.round((date2 - date1) / msPerDay) + 1;
+        }
+
+        function addDays(date, days) {
+            const result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        function toggleMode() {
+            const mode = document.querySelector('input[name="calc_mode"]:checked').value;
+            const prisonSec = document.getElementById('prisonSentenceSection');
+            const fineSec = document.getElementById('fineInfoSection');
+            const card04 = document.getElementById('cardSection04');
+            const card03Title = document.getElementById('card03Title');
+            const fineResultGrid = document.getElementById('fineResultGrid');
+
+            if (mode === 'fine_only') {
+                prisonSec.classList.add('hidden');
+                fineSec.classList.remove('hidden');
+                card04.classList.remove('hidden');
+                card03Title.innerText = "ข้อมูลค่าปรับตามคำพิพากษา";
+                fineResultGrid.classList.remove('hidden');
+            } else if (mode === 'prison_only') {
+                prisonSec.classList.remove('hidden');
+                fineSec.classList.add('hidden');
+                card04.classList.add('hidden');
+                card03Title.innerText = "ข้อมูลกำหนดโทษจำคุก";
+                fineResultGrid.classList.add('hidden');
+            } else if (mode === 'prison_fine') {
+                prisonSec.classList.remove('hidden');
+                fineSec.classList.remove('hidden');
+                card04.classList.remove('hidden');
+                card03Title.innerText = "ข้อมูลโทษจำคุกและค่าปรับตามคำพิพากษา";
+                fineResultGrid.classList.remove('hidden');
+            }
+        }
+
+        function calculate() {
+            const mode = document.querySelector('input[name="calc_mode"]:checked').value;
+            const startDateVal = document.getElementById('startDate').value;
+            const sentenceDateVal = document.getElementById('sentenceDate').value;
+
+            if (!startDateVal || !sentenceDateVal) return;
+
+            const dStart = new Date(startDateVal);
+            const dSentence = new Date(sentenceDateVal);
+
+            // คำนวณวันขังก่อนพิพากษา (วันเริ่มขัง ถึง วันก่อนหน้าพิพากษา)
+            let remandDays = 0;
+            if (dStart < dSentence) {
+                const msPerDay = 24 * 60 * 60 * 1000;
+                const date1 = new Date(dStart.getFullYear(), dStart.getMonth(), dStart.getDate());
+                const date2 = new Date(dSentence.getFullYear(), dSentence.getMonth(), dSentence.getDate());
+                remandDays = Math.round((date2 - date1) / msPerDay);
+            }
+
+            document.getElementById('remandDaysText').innerText = `${remandDays} วัน`;
+
+            if (mode === 'prison_only') {
+                const pYears = parseInt(document.getElementById('prisonYears').value) || 0;
+                const pMonths = parseInt(document.getElementById('prisonMonths').value) || 0;
+                const pDays = parseInt(document.getElementById('prisonDays').value) || 0;
+
+                // วันครบกำหนดโทษ
+                let termEndDate = new Date(dSentence.getFullYear(), dSentence.getMonth(), dSentence.getDate());
+                termEndDate.setFullYear(termEndDate.getFullYear() + pYears);
+                termEndDate.setMonth(termEndDate.getMonth() + pMonths);
+                termEndDate.setDate(termEndDate.getDate() + pDays - remandDays - 1);
+
+                // วันปล่อยตัวคือวันถัดไป (+1 วัน)
+                let releaseDate = addDays(termEndDate, 1);
+
+                document.getElementById('resReleaseDate').innerText = formatDateThai(releaseDate);
+                document.getElementById('summaryList').innerHTML = `
+                    <li>เริ่มถูกคุมขัง / ฝากขังตั้งแต่วันที่: <strong>${formatDateThai(dStart)}</strong></li>
+                    <li>วันที่ศาลมีคำพิพากษา: <strong>${formatDateThai(dSentence)}</strong> (หักขังก่อนพิพากษา <strong>${remandDays} วัน</strong>)</li>
+                    <li>กำหนดโทษจำคุก: <strong>${pYears} ปี ${pMonths} เดือน ${pDays} วัน</strong></li>
+                    <li>ครบกำหนดโทษวันที่: <strong>${formatDateThai(termEndDate)}</strong></li>
+                    <li>วันปล่อยตัว / พ้นโทษ (เช้าวันถัดไป): <strong>${formatDateThai(releaseDate)}</strong></li>
+                `;
+            } else {
+                // Fine / Confinement calculations
+                const confinementStartVal = document.getElementById('confinementStart').value;
+                const checkDateVal = document.getElementById('checkDate').value;
+
+                if (!confinementStartVal || !checkDateVal) return;
+
+                const totalFine = parseFloat(document.getElementById('totalFine').value) || 0;
+                const paidBefore = parseFloat(document.getElementById('paidBefore').value) || 0;
+                const payToday = parseFloat(document.getElementById('payToday').value) || 0;
+                const ratePerDay = 500;
+                const maxDays = parseInt(document.getElementById('maxConfinement').value);
+
+                const dConfStart = new Date(confinementStartVal);
+                const dCheck = new Date(checkDateVal);
+
+                let netFineToPay = Math.max(0, totalFine - paidBefore);
+                let totalDaysNeeded = Math.ceil(netFineToPay / ratePerDay);
+                if (totalDaysNeeded > maxDays) totalDaysNeeded = maxDays;
+
+                let daysServed = diffInDaysInclusive(dConfStart, dCheck);
+                if (dCheck < dConfStart) daysServed = 0;
+                if (daysServed > totalDaysNeeded) daysServed = totalDaysNeeded;
+
+                let amountDeductedByTime = daysServed * ratePerDay;
+                if (amountDeductedByTime > netFineToPay) amountDeductedByTime = netFineToPay;
+
+                document.getElementById('daysServedText').innerText = `${daysServed} วัน`;
+                document.getElementById('amountDeductedText').innerText = `${amountDeductedByTime.toLocaleString()} บาท`;
+
+                let remainingFine = Math.max(0, netFineToPay - amountDeductedByTime - payToday);
+                let remainingDays = Math.ceil(remainingFine / ratePerDay);
+
+                let totalRemainingDaysNeeded = Math.ceil((netFineToPay - payToday) / ratePerDay);
+                
+                // วันครบกำหนดกักขัง
+                let termEndDate = addDays(dConfStart, totalRemainingDaysNeeded - 1);
+                // วันปล่อยตัวคือวันถัดไป (+1 วัน)
+                let releaseDate = addDays(termEndDate, 1);
+
+                document.getElementById('resRemainingFine').innerText = `${remainingFine.toLocaleString()} บาท`;
+                document.getElementById('resRemainingDays').innerText = `${remainingDays} วัน`;
+                document.getElementById('resReleaseDate').innerText = formatDateThai(releaseDate);
+
+                document.getElementById('summaryList').innerHTML = `
+                    <li>ค่าปรับตามคำพิพากษา: <strong>${totalFine.toLocaleString()} บาท</strong></li>
+                    <li>กักขังตั้งแต่วันที่ <strong>${formatDateThai(dConfStart)}</strong> ถึง <strong>${formatDateThai(dCheck)}</strong> รวม <strong>${daysServed} วัน</strong> (${amountDeductedByTime.toLocaleString()} บาท)</li>
+                    ${payToday > 0 ? `<li>ชำระเพิ่ม: <strong>${payToday.toLocaleString()} บาท</strong></li>` : ''}
+                    <li>ค่าปรับคงเหลือ: <strong>${remainingFine.toLocaleString()} บาท</strong> (กักขังต่ออีก <strong>${remainingDays} วัน</strong>)</li>
+                    <li>ครบกำหนดกักขังวันที่: <strong>${formatDateThai(termEndDate)}</strong></li>
+                    <li>วันปล่อยตัว / พ้นโทษ (เช้าวันถัดไป): <strong>${formatDateThai(releaseDate)}</strong></li>
+                `;
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('mode1').checked = true;
+            document.getElementById('startDate').value = '2026-08-29';
+            document.getElementById('sentenceDate').value = '2026-08-29';
+            document.getElementById('totalFine').value = 4000;
+            document.getElementById('paidBefore').value = 0;
+            document.getElementById('payToday').value = 0;
+            toggleMode();
+            calculate();
+        }
+
+        window.onload = () => {
+            toggleMode();
+            calculate();
+        };
+    </script>
+</body>
+</html>
