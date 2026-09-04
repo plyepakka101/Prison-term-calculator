@@ -347,30 +347,30 @@
             </div>
         </div>
 
-        <!-- 02: การคุมขังก่อนพิพากษา -->
+        <!-- 02: การขังก่อนพิพากษา (ปรับเป็นกรอกจำนวนวัน) -->
         <div class="card">
             <div class="card-header">
                 <span class="step-badge">02</span>
-                <span class="card-title">การคุมขัง / ฝากขังก่อนพิพากษา</span>
+                <span class="card-title">การกักขัง / จำคุกก่อนพิพากษา</span>
             </div>
             <div class="form-grid">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="startDate">วันเริ่มถูกคุมขัง / ฝากขัง</label>
-                        <input type="date" id="startDate" onchange="calculate()">
+                        <label for="remandDaysInput">จำนวนวันถูกกักขัง / จำคุกก่อนพิพากษา (วัน)</label>
+                        <input type="number" id="remandDaysInput" value="0" min="0" oninput="calculate()">
                     </div>
                     <div class="form-group">
                         <label for="sentenceDate">วันที่ศาลมีคำพิพากษา</label>
-                        <input type="date" id="sentenceDate" onchange="calculate()">
+                        <input type="date" id="sentenceDate" value="2026-08-29" onchange="calculate()">
                     </div>
                 </div>
             </div>
             <div class="info-box">
-                📌 ขังก่อนพิพากษา: <strong id="remandDaysText">0 วัน</strong> (นำไปหักลบวันจำคุกได้)
+                📌 หักขังก่อนพิพากษา: <strong id="remandDaysText">0 วัน</strong> (นำไปหักลบจำนวนวันต้องโทษตาม ป.อ. มาตรา 22)
             </div>
         </div>
 
-        <!-- 03: ข้อมูลกำหนดโทษ (จำคุก / ค่าปรับ) -->
+        <!-- 03: ข้อมูลกำหนดโทษ -->
         <div class="card" id="cardSection03">
             <div class="card-header">
                 <span class="step-badge">03</span>
@@ -392,7 +392,7 @@
                     <div class="form-row" style="margin-top: 12px;">
                         <div class="form-group">
                             <label for="prisonDays">กำหนดโทษจำคุก (วัน)</label>
-                            <input type="number" id="prisonDays" value="0" min="0" oninput="calculate()">
+                            <input type="number" id="prisonDays" value="30" min="0" oninput="calculate()">
                         </div>
                         <div class="form-group">
                         </div>
@@ -405,7 +405,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="totalFine">ค่าปรับตามคำพิพากษา (บาท)</label>
-                            <input type="number" id="totalFine" value="0" step="100" oninput="calculate()">
+                            <input type="number" id="totalFine" value="4000" step="100" oninput="calculate()">
                         </div>
                         <div class="form-group">
                             <label for="paidBefore">ชำระแล้วก่อนหน้านี้ (บาท)</label>
@@ -439,11 +439,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="confinementStart">วันที่เริ่มกักขังจริง</label>
-                        <input type="date" id="confinementStart" onchange="calculate()">
+                        <input type="date" id="confinementStart" value="2026-08-29" onchange="calculate()">
                     </div>
                     <div class="form-group">
                         <label for="checkDate">วันที่ตรวจสอบ / ชำระเงิน</label>
-                        <input type="date" id="checkDate" onchange="calculate()">
+                        <input type="date" id="checkDate" value="2026-09-02" onchange="calculate()">
                     </div>
                 </div>
                 <div class="form-row">
@@ -453,7 +453,7 @@
                     </div>
                     <div class="form-group">
                         <div style="padding-top: 25px;">
-                            <span style="font-size: 0.85rem; color: var(--text-muted);">* ระบบจะหักวันกักขังตามจำนวนวันที่ถูกขังจริง</span>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">* เศษค่าปรับที่เหลือน้อยกว่า 500 บาท ไม่ต้องกักขังแทนค่าปรับ (ป.อ. มาตรา 30)</span>
                         </div>
                     </div>
                 </div>
@@ -502,9 +502,10 @@
 
         <div class="legal-note">
             <strong>⚠️ หมายเหตุตามข้อกฎหมาย:</strong><br>
-            1. การนับวันต้องโทษให้นับวันที่เริ่มถูกคุมขังเป็น 1 วันเต็มทันที<br>
-            2. หากวันเริ่มขังตรงกับวันพิพากษา จะถือเป็นวันเริ่มรับโทษตามคำพิพากษา (ไม่มีวันขังก่อนพิพากษา)<br>
-            3. ผู้ต้องขัง/ผู้ถูกกักขังจะได้รับการปล่อยตัวใน <strong>วันถัดไปถัดจากวันครบกำหนดโทษ</strong>
+            1. การนับวันต้องโทษให้นับวันที่เริ่มถูกคุมขังเป็น 1 วันเต็มทันที (ป.อ. มาตรา 21)<br>
+            2. จำนวนวันขังก่อนพิพากษา จะนำไปหักลบกับจำนวนวันกำหนดโทษจำคุก หรือหักชำระค่าปรับตามอัตรา 500 บาท/วัน (ป.อ. มาตรา 22)<br>
+            3. หากค่าปรับคงเหลือน้อยกว่า 500 บาท ไม่ต้องกักขังแทนค่าปรับสำหรับเศษที่เหลือนั้น แต่ยังคงมีภาระต้องชำระ (ป.อ. มาตรา 30)<br>
+            4. ผู้ต้องขัง/ผู้ถูกกักขังจะได้รับการปล่อยตัวใน <strong>วันถัดไปถัดจากวันครบกำหนดโทษ</strong>
         </div>
 
     </div>
@@ -564,23 +565,12 @@
 
         function calculate() {
             const mode = document.querySelector('input[name="calc_mode"]:checked').value;
-            const startDateVal = document.getElementById('startDate').value;
             const sentenceDateVal = document.getElementById('sentenceDate').value;
+            const remandDays = parseInt(document.getElementById('remandDaysInput').value) || 0;
 
-            if (!startDateVal || !sentenceDateVal) return;
+            if (!sentenceDateVal) return;
 
-            const dStart = new Date(startDateVal);
             const dSentence = new Date(sentenceDateVal);
-
-            // คำนวณวันขังก่อนพิพากษา (วันเริ่มขัง ถึง วันก่อนหน้าพิพากษา)
-            let remandDays = 0;
-            if (dStart < dSentence) {
-                const msPerDay = 24 * 60 * 60 * 1000;
-                const date1 = new Date(dStart.getFullYear(), dStart.getMonth(), dStart.getDate());
-                const date2 = new Date(dSentence.getFullYear(), dSentence.getMonth(), dSentence.getDate());
-                remandDays = Math.round((date2 - date1) / msPerDay);
-            }
-
             document.getElementById('remandDaysText').innerText = `${remandDays} วัน`;
 
             if (mode === 'prison_only') {
@@ -588,7 +578,7 @@
                 const pMonths = parseInt(document.getElementById('prisonMonths').value) || 0;
                 const pDays = parseInt(document.getElementById('prisonDays').value) || 0;
 
-                // วันครบกำหนดโทษ
+                // วันครบกำหนดโทษจำคุก (หักวันขังก่อนพิพากษา)
                 let termEndDate = new Date(dSentence.getFullYear(), dSentence.getMonth(), dSentence.getDate());
                 termEndDate.setFullYear(termEndDate.getFullYear() + pYears);
                 termEndDate.setMonth(termEndDate.getMonth() + pMonths);
@@ -599,9 +589,9 @@
 
                 document.getElementById('resReleaseDate').innerText = formatDateThai(releaseDate);
                 document.getElementById('summaryList').innerHTML = `
-                    <li>เริ่มถูกคุมขัง / ฝากขังตั้งแต่วันที่: <strong>${formatDateThai(dStart)}</strong></li>
-                    <li>วันที่ศาลมีคำพิพากษา: <strong>${formatDateThai(dSentence)}</strong> (หักขังก่อนพิพากษา <strong>${remandDays} วัน</strong>)</li>
-                    <li>กำหนดโทษจำคุก: <strong>${pYears} ปี ${pMonths} เดือน ${pDays} วัน</strong></li>
+                    <li>วันที่ศาลมีคำพิพากษา: <strong>${formatDateThai(dSentence)}</strong></li>
+                    <li>ขังก่อนพิพากษา: <strong>${remandDays} วัน</strong> (นำไปหักออกจากกำหนดโทษ)</li>
+                    <li>กำหนดโทษจำคุกตามคำพิพากษา: <strong>${pYears} ปี ${pMonths} เดือน ${pDays} วัน</strong></li>
                     <li>ครบกำหนดโทษวันที่: <strong>${formatDateThai(termEndDate)}</strong></li>
                     <li>วันปล่อยตัว / พ้นโทษ (เช้าวันถัดไป): <strong>${formatDateThai(releaseDate)}</strong></li>
                 `;
@@ -621,8 +611,12 @@
                 const dConfStart = new Date(confinementStartVal);
                 const dCheck = new Date(checkDateVal);
 
-                let netFineToPay = Math.max(0, totalFine - paidBefore);
-                let totalDaysNeeded = Math.ceil(netFineToPay / ratePerDay);
+                // นำวันขังก่อนพิพากษาไปหักลบลบค่าปรับ (อัตรา 500 บาท/วัน)
+                const remandDeductionMoney = remandDays * ratePerDay;
+                let netFineToPay = Math.max(0, totalFine - paidBefore - remandDeductionMoney);
+                
+                // จำนวนวันที่ต้องกักขังทั้งหมดที่เหลือ
+                let totalDaysNeeded = Math.floor(netFineToPay / ratePerDay);
                 if (totalDaysNeeded > maxDays) totalDaysNeeded = maxDays;
 
                 let daysServed = diffInDaysInclusive(dConfStart, dCheck);
@@ -636,54 +630,74 @@
                 document.getElementById('amountDeductedText').innerText = `${amountDeductedByTime.toLocaleString()} บาท`;
 
                 let remainingFine = Math.max(0, netFineToPay - amountDeductedByTime - payToday);
-                let remainingDays = Math.ceil(remainingFine / ratePerDay);
-
-                let totalRemainingDaysNeeded = Math.ceil((netFineToPay - payToday) / ratePerDay);
                 
-                // วันครบกำหนดกักขัง
-                let termEndDate = addDays(dConfStart, totalRemainingDaysNeeded - 1);
-                // วันปล่อยตัวคือวันถัดไป (+1 วัน)
-                let releaseDate = addDays(termEndDate, 1);
+                // หากค่าปรับคงเหลือน้อยกว่า 500 บาท ไม่ต้องกักขังแทนค่าปรับ (ป.อ. มาตรา 30)
+                let remainingDays = (remainingFine < ratePerDay) ? 0 : Math.floor(remainingFine / ratePerDay);
+
+                let releaseDate;
+                let termEndDate;
+
+                if (mode === 'prison_fine') {
+                    const pYears = parseInt(document.getElementById('prisonYears').value) || 0;
+                    const pMonths = parseInt(document.getElementById('prisonMonths').value) || 0;
+                    const pDays = parseInt(document.getElementById('prisonDays').value) || 0;
+
+                    // ในโหมดจำคุก+ปรับ วันขังก่อนพิพากษาจะนำไปหักโทษจำคุกก่อน
+                    let prisonEndDate = new Date(dSentence.getFullYear(), dSentence.getMonth(), dSentence.getDate());
+                    prisonEndDate.setFullYear(prisonEndDate.getFullYear() + pYears);
+                    prisonEndDate.setMonth(prisonEndDate.getMonth() + pMonths);
+                    prisonEndDate.setDate(prisonEndDate.getDate() + pDays - remandDays - 1);
+
+                    // กักขังแทนค่าปรับต่อจากวันพ้นโทษจำคุก
+                    termEndDate = addDays(prisonEndDate, remainingDays);
+                    releaseDate = addDays(termEndDate, 1);
+                } else {
+                    let totalRemainingDaysNeeded = Math.floor((netFineToPay - payToday) / ratePerDay);
+                    if (totalRemainingDaysNeeded > maxDays) totalRemainingDaysNeeded = maxDays;
+                    
+                    termEndDate = addDays(dConfStart, totalRemainingDaysNeeded - 1);
+                    releaseDate = addDays(termEndDate, 1);
+                }
 
                 document.getElementById('resRemainingFine').innerText = `${remainingFine.toLocaleString()} บาท`;
                 document.getElementById('resRemainingDays').innerText = `${remainingDays} วัน`;
                 document.getElementById('resReleaseDate').innerText = formatDateThai(releaseDate);
 
-                document.getElementById('summaryList').innerHTML = `
+                let summaryHTML = `
                     <li>ค่าปรับตามคำพิพากษา: <strong>${totalFine.toLocaleString()} บาท</strong></li>
+                    ${remandDays > 0 ? `<li>หักวันขังก่อนพิพากษา: <strong>${remandDays} วัน</strong> (หักค่าปรับได้ <strong>${remandDeductionMoney.toLocaleString()} บาท</strong>)</li>` : ''}
                     <li>กักขังตั้งแต่วันที่ <strong>${formatDateThai(dConfStart)}</strong> ถึง <strong>${formatDateThai(dCheck)}</strong> รวม <strong>${daysServed} วัน</strong> (${amountDeductedByTime.toLocaleString()} บาท)</li>
                     ${payToday > 0 ? `<li>ชำระเพิ่ม: <strong>${payToday.toLocaleString()} บาท</strong></li>` : ''}
-                    <li>ค่าปรับคงเหลือ: <strong>${remainingFine.toLocaleString()} บาท</strong> (กักขังต่ออีก <strong>${remainingDays} วัน</strong>)</li>
-                    <li>ครบกำหนดกักขังวันที่: <strong>${formatDateThai(termEndDate)}</strong></li>
-                    <li>วันปล่อยตัว / พ้นโทษ (เช้าวันถัดไป): <strong>${formatDateThai(releaseDate)}</strong></li>
+                    <li>ค่าปรับคงเหลือ: <strong>${remainingFine.toLocaleString()} บาท</strong> ${remainingFine < ratePerDay && remainingFine > 0 ? '<span style="color: #d97706; font-weight: bold;">(คงเหลือน้อยกว่า 500 บาท ไม่ต้องกักขังแทนค่าปรับ แต่ยังคงมีภาระต้องชำระ)</span>' : `(กักขังต่ออีก <strong>${remainingDays} วัน</strong>)`}</li>
                 `;
+
+                if (mode === 'prison_fine') {
+                    summaryHTML += `<li>รวมวันปล่อยตัวหลังพ้นโทษจำคุกและกักขังแทนค่าปรับ: <strong>${formatDateThai(releaseDate)}</strong></li>`;
+                } else {
+                    summaryHTML += `
+                        <li>ครบกำหนดกักขังวันที่: <strong>${formatDateThai(termEndDate)}</strong></li>
+                        <li>วันปล่อยตัว / พ้นโทษ (เช้าวันถัดไป): <strong>${formatDateThai(releaseDate)}</strong></li>
+                    `;
+                }
+
+                document.getElementById('summaryList').innerHTML = summaryHTML;
             }
         }
 
         function resetForm() {
             document.getElementById('mode1').checked = true;
-            
-            // ตั้งค่าเป็นวันที่ปัจจุบัน
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('startDate').value = today;
-            document.getElementById('sentenceDate').value = today;
-            document.getElementById('confinementStart').value = today;
-            document.getElementById('checkDate').value = today;
-
-            // ล้างค่าอินพุตทั้งหมดให้เป็น 0
-            document.getElementById('prisonYears').value = 0;
-            document.getElementById('prisonMonths').value = 0;
-            document.getElementById('prisonDays').value = 0;
-            document.getElementById('totalFine').value = 0;
+            document.getElementById('remandDaysInput').value = 0;
+            document.getElementById('sentenceDate').value = '2026-08-29';
+            document.getElementById('totalFine').value = 4000;
             document.getElementById('paidBefore').value = 0;
             document.getElementById('payToday').value = 0;
-
             toggleMode();
             calculate();
         }
 
         window.onload = () => {
-            resetForm();
+            toggleMode();
+            calculate();
         };
     </script>
 </body>
