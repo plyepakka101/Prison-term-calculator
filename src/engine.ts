@@ -92,13 +92,11 @@ export function calculateCase(input:CalculationInput):CalculationResult {
   const exceedsMaximum=needsConfinement&&remainingConfinementDays>maxDays;
 
   // checkDate คือวันสุดท้ายที่รับเครดิตแล้ว ดังนั้นวันคงเหลือวันแรกคือ checkDate + 1
-  const projectedConfinementEnd=remainingConfinementDays>0
-    ? addDays(checkDate||confinementStart||new Date(),remainingConfinementDays):null;
+  const projectedConfinementEnd=remainingConfinementDays>0&& (checkDate||confinementStart)
+    ? addDays(checkDate||confinementStart!,remainingConfinementDays):null;
   const remainingSentenceDays=needsImprisonment?Math.max(0,nominalAllocationDays-imprisonmentCreditDays):0;
   const projectedRelease=statutoryEnd&&needsImprisonment?subtractDays(statutoryEnd,imprisonmentCreditDays):null;
-  const complete=input.mode==='imprisonment'
-    ? remainingSentenceDays===0
-    : fineRemaining===0&&(!needsConfinement||remainingConfinementDays===0);
+  const complete=remainingSentenceDays===0 && fineRemaining===0 && (!needsConfinement||remainingConfinementDays===0);
 
   return {
     mode:input.mode,
