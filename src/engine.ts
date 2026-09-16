@@ -58,7 +58,7 @@ const addDays=(d:Date,n:number)=>{const r=dateOnly(d);r.setDate(r.getDate()+inte
 export function calculateCase(input:CalculationInput):CalculationResult {
   const needsConfinement=input.mode==='fine'||input.mode==='imprisonConfinement';
   const needsImprisonment=input.mode!=='fine';
-  const fineAmount=clamp(input.fineAmount);
+  const fineAmount=input.mode==='imprisonment'?0:clamp(input.fineAmount);
   const paidBefore=Math.min(clamp(input.paidBefore),fineAmount);
   const initialFineRemaining=Math.max(0,fineAmount-paidBefore);
   const pretrialDays=integer(input.pretrialDays);
@@ -95,7 +95,11 @@ export function calculateCase(input:CalculationInput):CalculationResult {
   const projectedConfinementEnd=remainingConfinementDays>0&& (checkDate||confinementStart)
     ? addDays(checkDate||confinementStart!,remainingConfinementDays):null;
   const remainingSentenceDays=needsImprisonment?Math.max(0,nominalAllocationDays-imprisonmentCreditDays):0;
-  const projectedRelease=needsImprisonment&&imprisonmentStart?addDays(imprisonmentStart,remainingSentenceDays):null;
+  // imprisonmentStart คือวันแรกของโทษ (นับรวม) วันพ้นโทษวันสุดท้ายคือ imprisonmentStart + (จำนวนวันคงเหลือ - 1)
+  // ถ้ารับโทษครบแล้ว (เครดิตเกิน/เท่าโทษ) ถือว่าพ้นโทษไปแล้วตั้งแต่ก่อนวันเริ่มจำคุกจริง
+  const projectedRelease=needsImprisonment&&imprisonmentStart
+    ?(remainingSentenceDays>0?addDays(imprisonmentStart,remainingSentenceDays-1):subtractDays(imprisonmentStart,1))
+    :null;
   const complete=(needsImprisonment?remainingSentenceDays===0:true) && fineRemaining===0 && (!needsConfinement||remainingConfinementDays===0);
 
   return {
