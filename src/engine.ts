@@ -38,7 +38,7 @@ export const inclusiveDays = (a:Date|null,b:Date|null) => {
   return Math.floor((dateOnly(b).getTime()-dateOnly(a).getTime())/DAY_MS)+1;
 };
 
-/** วันสิ้นสุดของโทษที่ระบุเป็นปี/เดือน/วัน โดยใช้ปฏิทินและไม่ให้วันที่ปลายเดือนไหล */
+/** วันสิ้นสุดของโทษที่ระบุเป็นปี/เดือน/วัน โดยใช้ปฏิทินและไม่ให้วันที[...]
 export const addSentence = (start:Date|null,s:SentenceInput) => {
   if (!start) return null;
   const y=integer(s.years), m=integer(s.months), days=integer(s.days);
@@ -54,7 +54,7 @@ export const addSentence = (start:Date|null,s:SentenceInput) => {
 const subtractDays=(d:Date,n:number)=>{const r=dateOnly(d);r.setDate(r.getDate()-integer(n));return r};
 const addDays=(d:Date,n:number)=>{const r=dateOnly(d);r.setDate(r.getDate()+integer(n));return r};
 
-/** Engine เดียวของระบบ: ป.อ. มาตรา 30 ใช้อัตรา 500 บาท/วัน และกรณี 200,000 บาทขึ้นไปอาจกักขังเกิน 1 ปีแต่ไม่เกิน 2 ปี */
+/** Engine เดียวของระบบ: ป.อ. มาตรา 30 ใช้อัตรา 500 บาท/วัน และกรณี 200,000 บาทขึ้นไปอาจก�[...]
 export function calculateCase(input:CalculationInput):CalculationResult {
   const needsConfinement=input.mode==='fine'||input.mode==='imprisonConfinement';
   const needsImprisonment=input.mode!=='fine';
@@ -70,7 +70,7 @@ export function calculateCase(input:CalculationInput):CalculationResult {
   const fallbackSentenceDays=integer(input.sentence.years)*365+integer(input.sentence.months)*30+integer(input.sentence.days);
   const nominalAllocationDays=calendarSentenceDays||fallbackSentenceDays;
 
-  // จำคุก + ปรับ: หักวันคุมขังก่อนพิพากษาจากโทษจำคุกก่อน เหลือเท่าใดจึงหักค่าปรับ
+  // จำคุก + ปรับ: หักวันคุมขังก่อนพิพากษาจากโทษจำคุกก่อน เหลือเท่าใดจึง��[...]
   const imprisonmentCreditDays=input.mode==='fine'?0:Math.min(pretrialDays,nominalAllocationDays);
   const remainingPretrialDays=input.mode==='fine'?pretrialDays:Math.max(0,pretrialDays-imprisonmentCreditDays);
   const pretrialFineCredit=input.mode==='imprisonment'?0:Math.min(initialFineRemaining,remainingPretrialDays*FINE_RATE);
@@ -96,7 +96,7 @@ export function calculateCase(input:CalculationInput):CalculationResult {
     ? addDays(checkDate||confinementStart!,remainingConfinementDays):null;
   const remainingSentenceDays=needsImprisonment?Math.max(0,nominalAllocationDays-imprisonmentCreditDays):0;
   const projectedRelease=statutoryEnd&&needsImprisonment?subtractDays(statutoryEnd,imprisonmentCreditDays):null;
-  const complete=remainingSentenceDays===0 && fineRemaining===0 && (!needsConfinement||remainingConfinementDays===0);
+  const complete=(needsImprisonment?remainingSentenceDays===0:true) && fineRemaining===0 && (!needsConfinement||remainingConfinementDays===0);
 
   return {
     mode:input.mode,
