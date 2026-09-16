@@ -98,7 +98,9 @@ export function calculateCase(input:CalculationInput):CalculationResult {
   // วันพ้นโทษคือวันถัดจากวันที่รับโทษครบ
   const projectedConfinementEnd=remainingConfinementDays>0&& (checkDate||confinementStart)
     ? addDays(checkDate||confinementStart!,remainingConfinementDays)
-    : (needsConfinement&&fineRemaining===0&&checkDate ? addDays(checkDate,1) : null);
+    : (needsConfinement&&fineRemaining===0
+      ? (confinementStart ? addDays(confinementStart, Math.ceil(fineAfterPretrial/FINE_RATE)) : (checkDate ? addDays(checkDate,1) : null))
+      : null);
   const remainingSentenceDays=needsImprisonment?Math.max(0,nominalAllocationDays-imprisonmentCreditDays):0;
   // imprisonmentStart คือวันแรกของโทษ (นับรวม) วันพ้นโทษคือวันถัดจากวันสุดท้าย
   const projectedRelease=needsImprisonment&&imprisonmentStart
