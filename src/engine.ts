@@ -95,7 +95,7 @@ export function calculateCase(input:CalculationInput):CalculationResult {
   const projectedConfinementEnd=remainingConfinementDays>0&& (checkDate||confinementStart)
     ? addDays(checkDate||confinementStart!,remainingConfinementDays):null;
   const remainingSentenceDays=needsImprisonment?Math.max(0,nominalAllocationDays-imprisonmentCreditDays):0;
-  const projectedRelease=remainingSentenceDays>0&&needsImprisonment&&imprisonmentStart?addDays(imprisonmentStart,nominalAllocationDays-imprisonmentCreditDays):null;
+  const projectedRelease=needsImprisonment&&imprisonmentStart?addDays(imprisonmentStart,remainingSentenceDays):null;
   const complete=(needsImprisonment?remainingSentenceDays===0:true) && fineRemaining===0 && (!needsConfinement||remainingConfinementDays===0);
 
   return {
