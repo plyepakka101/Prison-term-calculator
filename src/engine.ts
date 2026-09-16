@@ -97,7 +97,7 @@ export function calculateCase(input:CalculationInput):CalculationResult {
   // checkDate คือวันสุดท้ายที่รับเครดิตแล้ว ดังนั้นวันคงเหลือวันแรกคือ checkDate + 1
   // วันพ้นโทษคือวันถัดจากวันที่รับโทษครบ
   const projectedConfinementEnd=remainingConfinementDays>0&& (checkDate||confinementStart)
-    ? addDays(checkDate||confinementStart!,remainingConfinementDays+1)
+    ? addDays(checkDate||confinementStart!,remainingConfinementDays)
     : (needsConfinement&&fineRemaining===0&&checkDate ? addDays(checkDate,1) : null);
   const remainingSentenceDays=needsImprisonment?Math.max(0,nominalAllocationDays-imprisonmentCreditDays):0;
   // imprisonmentStart คือวันแรกของโทษ (นับรวม) วันพ้นโทษคือวันถัดจากวันสุดท้าย
