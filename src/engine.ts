@@ -33,7 +33,11 @@ export const parseLocalDate = (v:string) => {
   const d = new Date(Number(year), Number(month) - 1, Number(day));
   return d.getFullYear() === Number(year) && d.getMonth() === Number(month) - 1 && d.getDate() === Number(day) ? d : null;
 };
-export const formatThaiDate = (d:Date|null) => d ? d.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'}) : '-';
+export const formatThaiDate = (d:Date|null) => {
+  if (!d) return '-';
+  const thaiMonths = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  return `${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear()+543}`;
+};
 
 /** วันเริ่มนับรวมเป็นวันแรก */
 export const inclusiveDays = (a:Date|null,b:Date|null) => {
