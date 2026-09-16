@@ -27,8 +27,11 @@ const dateOnly = (d:Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()
 export const formatSentence = (s:SentenceInput) => `${integer(s.years)} ปี ${integer(s.months)} เดือน ${integer(s.days)} วัน`;
 export const parseLocalDate = (v:string) => {
   if (!v) return null;
-  const d = new Date(`${v}T00:00:00`);
-  return Number.isNaN(d.getTime()) ? null : dateOnly(d);
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
+  if (!match) return null;
+  const [, year, month, day] = match;
+  const d = new Date(Number(year), Number(month) - 1, Number(day));
+  return d.getFullYear() === Number(year) && d.getMonth() === Number(month) - 1 && d.getDate() === Number(day) ? d : null;
 };
 export const formatThaiDate = (d:Date|null) => d ? d.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'}) : '-';
 

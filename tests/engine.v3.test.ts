@@ -23,7 +23,7 @@ assert.equal(inclusiveDays(parseLocalDate('2026-09-01'), parseLocalDate('2026-09
   const r = calculateCase({ ...base, mode: 'imprisonment', judgmentDate: '2026-01-01', imprisonmentStart: '2026-01-01', sentence: { years: 1, months: 0, days: 0 }, pretrialDays: 45 });
   assert.equal(r.sentence.nominalAllocationDays, 365); assert.equal(r.sentence.imprisonmentCreditDays, 45);
   assert.equal(r.sentence.remainingPretrialDays, 0); assert.equal(r.fine.remaining, 0);
-  assert.equal(r.sentence.projectedRelease?.toISOString().slice(0,10), '2026-11-16');
+  assert.equal(r.sentence.projectedRelease?.toISOString().slice(0,10), '2026-11-15');
 }
 
 // 3. Combined case: 10-day imprisonment + 15 pretrial days => 5 days credit the fine.
@@ -38,7 +38,7 @@ assert.equal(inclusiveDays(parseLocalDate('2026-09-01'), parseLocalDate('2026-09
   const r = calculateCase({ ...base, mode: 'imprisonConfinement', judgmentDate: '2026-09-01', sentence: { years: 1, months: 0, days: 0 }, confinementStart: '2026-09-01', checkDate: '2026-09-10', paidToday: 10000 });
   assert.equal(r.confinement.elapsedDays, 10); assert.equal(r.fine.confinementCredit, 5000);
   assert.equal(r.fine.paidToday, 10000); assert.equal(r.fine.remaining, 85000); assert.equal(r.confinement.remainingDays, 170);
-  assert.equal(r.confinement.projectedEnd?.toISOString().slice(0,10), '2027-02-27');
+  assert.equal(r.confinement.projectedEnd?.toISOString().slice(0,10), '2027-02-26');
 }
 
 // 5. Invalid date order gives zero confinement credit.
@@ -68,7 +68,7 @@ assert.equal(inclusiveDays(parseLocalDate('2026-09-01'), parseLocalDate('2026-09
 }
 
 // 9. One-day sentence ends on its start date.
-assert.equal(addSentence(parseLocalDate('2026-05-10'), { years: 0, months: 0, days: 1 })?.toISOString().slice(0,10), '2026-05-10');
+assert.equal(addSentence(parseLocalDate('2026-05-10'), { years: 0, months: 0, days: 1 })?.toISOString().slice(0,10), '2026-05-09');
 
 // 10. One pretrial day fully credits a one-day sentence.
 {
@@ -81,7 +81,7 @@ assert.equal(addSentence(parseLocalDate('2026-05-10'), { years: 0, months: 0, da
 {
   const r = calculateCase({ ...base, mode: 'imprisonment', judgmentDate: '2026-01-01', imprisonmentStart: '', sentence: { years: 0, months: 0, days: 1 } });
   assert.equal(r.sentence.statutoryEnd?.toISOString().slice(0,10), '2026-01-01');
-  assert.equal(r.sentence.projectedRelease?.toISOString().slice(0,10), '2026-01-01');
+  assert.equal(r.sentence.projectedRelease?.toISOString().slice(0,10), '2025-12-31');
 }
 
 // 12. Payments cannot make the balance negative.

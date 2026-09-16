@@ -47,9 +47,10 @@ export default function AppV2() {
   const result = useMemo(
     () => calculateCase({
       mode, sentence,
+      judgmentDate,
       pretrialDays: effectivePretrialDays,
       imprisonmentStart, fineAmount, paidBefore, paidToday,
-      fineRate: rate, confinementStart, checkDate, maxConfinementYears,
+      confinementStart, checkDate, maxConfinementYears,
     }),
     [mode, sentence, effectivePretrialDays, imprisonmentStart, fineAmount,
      paidBefore, paidToday, rate, confinementStart, checkDate, maxConfinementYears]
@@ -102,7 +103,7 @@ export default function AppV2() {
           <h2>ประเภทการคำนวณ</h2>
           <div className="grid sm:grid-cols-3 gap-3">
             {([['fine', 'กักขังแทนค่าปรับ'],
-               ['imprisonFine', 'จำคุกและปรับ'],
+               ['imprisonConfinement', 'จำคุกและปรับ'],
                ['imprisonConfinement', 'จำคุกและกักขังแทนค่าปรับ']] as const).map(([v, t]) => (
               <button key={v} onClick={() => setMode(v)} className={`mode ${mode === v ? 'mode-active' : ''}`}>{t}</button>
             ))}
