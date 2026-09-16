@@ -1,35 +1,99 @@
 import { useMemo, useState } from 'react';
-import { Calculator, CalendarDays, RotateCcw, Scale, WalletCards } from 'lucide-react';
+import { CalendarDays, Calculator, RotateCcw, Scale, WalletCards } from 'lucide-react';
 import { calculateCase, formatSentence, formatThaiDate, type CalculationMode } from './engine';
 
 const today = () => new Date().toISOString().slice(0, 10);
-const money = (n: number) => `${Math.round(n).toLocaleString('th-TH')} บาท`;
-const Field = ({label, hint, children}:{label:string;hint?:string;children:React.ReactNode}) => <label className="field"><span className="field-label">{label}</span>{children}{hint&&<small>{hint}</small>}</label>;
+const money = (n:number) => `${Math.round(n).toLocaleString('th-TH')} บาท`;
+const Field = ({label,hint,children}:{label:string;hint?:string;children:React.ReactNode}) => <label className="field"><span className="field-label">{label}</span>{children}{hint&&<small>{hint}</small>}</label>;
 const Result = ({label,value,hot=false}:{label:string;value:string;hot?:boolean}) => <div className={`result ${hot?'result-hi':''}`}><span>{label}</span><strong>{value}</strong></div>;
 
 export default function AppV2(){
- const [mode,setMode]=useState<CalculationMode>('fine');
- const [sentence,setSentence]=useState({years:0,months:0,days:0});
- const [judgmentDate,setJudgmentDate]=useState('');
- const [pretrialDays,setPretrialDays]=useState(0);
- const [imprisonmentStart,setImprisonmentStart]=useState('');
- const [fineAmount,setFineAmount]=useState(100000),[paidBefore,setPaidBefore]=useState(0),[paidToday,setPaidToday]=useState(0);
- const [confinementStart,setConfinementStart]=useState(''),[checkDate,setCheckDate]=useState(today()),[maxConfinementYears,setMaxConfinementYears]=useState<1|2>(1);
- const needsPrison=mode!=='fine',needsConfinement=mode==='fine'||mode==='imprisonConfinement';
- const result=useMemo(()=>calculateCase({mode,sentence,judgmentDate,pretrialDays,imprisonmentStart,fineAmount,paidBefore,paidToday,confinementStart,checkDate,maxConfinementYears}),[mode,sentence,judgmentDate,pretrialDays,imprisonmentStart,fineAmount,paidBefore,paidToday,confinementStart,checkDate,maxConfinementYears]);
- const setPart=(k:'years'|'months'|'days',v:string)=>setSentence(s=>({...s,[k]:Math.max(0,Number(v)||0)}));
- const reset=()=>{setMode('fine');setSentence({years:0,months:0,days:0});setJudgmentDate('');setPretrialDays(0);setImprisonmentStart('');setFineAmount(100000);setPaidBefore(0);setPaidToday(0);setConfinementStart('');setCheckDate(today());setMaxConfinementYears(1)};
- const modes:[CalculationMode,string,string][]=[['fine','กักขังแทนค่าปรับ','คำนวณวันกักขังจากค่าปรับ'],['imprisonFine','จำคุกและปรับ','จำคุกพร้อมค่าปรับ'],['imprisonConfinement','จำคุกและกักขังแทนค่าปรับ','จำคุก + กักขังแทนค่าปรับ']];
- const startLabel=mode==='fine'?'วันเริ่มกักขัง':'วันเริ่มจำคุก';
- const twoYearDisabled=fineAmount<200000;
- return <div className="app-shell"><header className="hero"><div className="hero-inner"><div className="brand"><div className="brand-icon"><Scale size={25}/></div><div><div className="eyebrow">LEGAL CALCULATION SYSTEM</div><h1>ระบบคำนวณวันต้องโทษ <b>V3</b></h1><p>Engine เดียว • นับวันแบบรวมวันเริ่ม • ตรวจเงื่อนไขกักขัง 1/2 ปีตามกฎหมายปัจจุบัน</p></div></div><button className="reset-btn" onClick={reset}><RotateCcw size={16}/>เริ่มคำนวณใหม่</button></div></header>
- <main className="workspace"><section className="step-card"><div className="section-title"><div className="step-no">01</div><div><h2>เลือกประเภทการคำนวณ</h2><p>เลือกให้ตรงกับคำพิพากษาหรือกรณีที่ต้องการตรวจสอบ</p></div></div><div className="mode-grid">{modes.map(([v,t,d])=><button key={v} className={`mode-card ${mode===v?'selected':''}`} onClick={()=>setMode(v)}><span className="mode-check">{mode===v?'✓':''}</span><strong>{t}</strong><small>{d}</small></button>)}</div></section>
- {needsPrison&&<section className="step-card"><div className="section-title"><div className="step-no">02</div><div><h2>ข้อมูลโทษจำคุก</h2><p>ระบุระยะโทษ วันพิพากษา และวันเริ่มจำคุก</p></div></div><div className="input-panel"><div className="panel-label">ระยะเวลาจำคุก</div><div className="sentence-grid"><Field label="ปี"><input type="number" min="0" value={sentence.years} onChange={e=>setPart('years',e.target.value)}/></Field><Field label="เดือน"><input type="number" min="0" max="11" value={sentence.months} onChange={e=>setPart('months',e.target.value)}/></Field><Field label="วัน"><input type="number" min="0" value={sentence.days} onChange={e=>setPart('days',e.target.value)}/></Field></div></div><div className="grid-two"><Field label="วันพิพากษา" hint="ใช้เป็นวันเริ่มจำคุกอัตโนมัติหากไม่กรอกวันเริ่มจำคุก"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={judgmentDate} onChange={e=>setJudgmentDate(e.target.value)}/></div></Field><Field label={startLabel}><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={imprisonmentStart} onChange={e=>setImprisonmentStart(e.target.value)}/></div></Field></div></section>}
- {!needsPrison&&<section className="step-card"><div className="section-title"><div className="step-no">02</div><div><h2>วันพิพากษาและวันเริ่มกักขัง</h2><p>ระบุวันพิพากษาและวันที่เริ่มกักขังแทนค่าปรับ</p></div></div><div className="grid-two"><Field label="วันพิพากษา"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={judgmentDate} onChange={e=>setJudgmentDate(e.target.value)}/></div></Field><Field label="วันเริ่มกักขัง"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={confinementStart} onChange={e=>setConfinementStart(e.target.value)}/></div></Field></div></section>}
- <section className="step-card"><div className="section-title"><div className="step-no">03</div><div><h2>การคุมขังก่อนพิพากษา</h2><p>กรอกจำนวนวันที่ถูกคุมขังก่อนพิพากษาเป็นตัวเลขโดยตรง</p></div></div><div className="grid-two"><Field label="จำนวนวันคุมขังก่อนพิพากษา" hint="กรอกจำนวนวันตามหมาย/หลักฐาน ไม่ต้องกรอกวันเริ่มและวันสิ้นสุด"><input type="number" min="0" step="1" inputMode="numeric" value={pretrialDays} onChange={e=>setPretrialDays(Math.max(0,Number(e.target.value)||0))}/></Field><div className="inline-info" style={{alignSelf:'end',marginBottom:0}}><CalendarDays size={16}/> คุมขังก่อนพิพากษา <b>{pretrialDays} วัน</b></div></div></section>
- <section className="step-card"><div className="section-title"><div className="step-no">04</div><div><h2>ข้อมูลค่าปรับ</h2><p>ระบุยอดตามคำพิพากษาและยอดที่ชำระแล้ว • อัตราตามกฎหมายปัจจุบัน 500 บาท/วัน</p></div></div><div className="grid-three"><Field label="ค่าปรับตามคำพิพากษา"><div className="money-input"><input type="number" min="0" value={fineAmount} onChange={e=>setFineAmount(Math.max(0,Number(e.target.value)||0))}/><span>บาท</span></div></Field><Field label="ชำระก่อนเริ่มกักขัง"><div className="money-input"><input type="number" min="0" value={paidBefore} onChange={e=>setPaidBefore(Math.max(0,Number(e.target.value)||0))}/><span>บาท</span></div></Field><Field label="อัตราตามกฎหมาย"><div className="money-input"><input type="text" value="500" readOnly aria-label="อัตราตามกฎหมาย 500 บาทต่อวัน"/><span>บาท/วัน</span></div></Field></div><div className="fine-strip"><WalletCards size={18}/><span>ค่าปรับหลังหักเงินที่ชำระแล้ว</span><b>{money(result.fine.initialRemaining)}</b></div></section>
- {needsConfinement&&<section className="step-card"><div className="section-title"><div className="step-no">05</div><div><h2>การกักขังแทนค่าปรับ</h2><p>วันเริ่มนับรวมเป็นวันกักขัง และระบบใช้ 500 บาทต่อวัน</p></div></div><div className="grid-two"><Field label="วันเริ่มกักขัง"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={confinementStart} onChange={e=>setConfinementStart(e.target.value)}/></div></Field><Field label="วันที่ตรวจสอบ / วันที่มาชำระ"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={checkDate} onChange={e=>setCheckDate(e.target.value)}/></div></Field><Field label="ชำระเงินวันนี้"><div className="money-input"><input type="number" min="0" value={paidToday} onChange={e=>setPaidToday(Math.max(0,Number(e.target.value)||0))}/><span>บาท</span></div></Field><Field label="เพดานตามคำสั่งศาล"><select value={maxConfinementYears} onChange={e=>setMaxConfinementYears(Number(e.target.value) as 1|2)}><option value="1">ไม่เกิน 1 ปี</option><option value="2" disabled={twoYearDisabled}>ไม่เกิน 2 ปี {twoYearDisabled?'(ต้องมีค่าปรับตั้งแต่ 200,000 บาท)':''}</option></select></Field></div>{twoYearDisabled&&<div className="inline-info">⚠️ ค่าปรับต่ำกว่า 200,000 บาท จึงไม่เปิดใช้ข้อยกเว้นกักขังเกิน 1 ปี</div>}{result.confinement.elapsedDays>0&&<div className="inline-info"><CalendarDays size={16}/> กักขังมาแล้ว <b>{result.confinement.elapsedDays} วัน</b> • เครดิต {money(result.fine.confinementCredit)}</div>}{result.confinement.exceedsMaximum&&<div className="inline-info">⚠️ ยอดวันกักขังที่เหลือเกินเพดานที่กำหนด โปรดตรวจสอบคำพิพากษาและยอดค่าปรับ</div>}</section>}
- <section className="summary-card"><div className="summary-head"><div><div className="eyebrow dark">CALCULATION RESULT</div><h2>ผลคำนวณ V3</h2></div><span className={`status ${result.status==='PAID'?'paid':''}`}>{result.status==='PAID'?'✓ ชำระครบแล้ว':'● ยังมียอดคงเหลือ'}</span></div><div className="result-grid">{needsPrison&&<><Result label="โทษจำคุกตามคำพิพากษา" value={formatSentence(sentence)}/><Result label="วันคุมขังก่อนพิพากษา" value={`${pretrialDays} วัน`}/><Result label="หักเข้าโทษจำคุก" value={`${result.sentence.imprisonmentCreditDays} วัน`}/><Result label="เหลือหักค่าปรับ" value={`${result.sentence.remainingPretrialDays} วัน`}/><Result label="วันสิ้นสุดโทษตามปฏิทิน" value={formatThaiDate(result.sentence.statutoryEnd)}/></>}<Result label="ค่าปรับคงเหลือ" value={money(result.fine.remaining)} hot/><Result label="กักขังแทนค่าปรับคงเหลือ" value={needsConfinement?`${result.confinement.remainingDays} วัน`:'—'} hot/><Result label="เพดานกักขัง" value={needsConfinement?`${result.confinement.maxDays} วัน`:'—'}/><Result label="วันพ้นโทษโดยประมาณ" value={needsConfinement?formatThaiDate(result.confinement.projectedEnd):formatThaiDate(result.sentence.projectedRelease)}/></div><div className="formula-mini"><Calculator size={16}/><span>V3 Engine: <b>calculateCase()</b> • วันเริ่มกักขังนับรวม • อัตรา 500 บาท/วัน • ตรวจเงื่อนไข 200,000 บาท</span></div></section>
- <section className="warning">⚠️ <span><b>หมายเหตุ:</b> V3 เป็นเครื่องมือช่วยคำนวณตามหลักเกณฑ์กฎหมายปัจจุบัน ผลจริงต้องตรวจสอบคำพิพากษา หมายจำคุก หมายกักขัง วันเริ่มนับโทษ และคำสั่งศาลเรื่องระยะเวลากักขังทุกครั้งก่อนนำไปใช้เป็นทางการ</span></section>
- </main></div>;
+  const [mode,setMode]=useState<CalculationMode>('fine');
+  const [sentence,setSentence]=useState({years:0,months:0,days:0});
+  const [judgmentDate,setJudgmentDate]=useState('');
+  const [pretrialDays,setPretrialDays]=useState(0);
+  const [imprisonmentStart,setImprisonmentStart]=useState('');
+  const [fineAmount,setFineAmount]=useState(100000);
+  const [paidBefore,setPaidBefore]=useState(0);
+  const [paidToday,setPaidToday]=useState(0);
+  const [confinementStart,setConfinementStart]=useState('');
+  const [checkDate,setCheckDate]=useState(today());
+  const [maxConfinementYears,setMaxConfinementYears]=useState<1|2>(1);
+
+  const needsPrison=mode!=='fine';
+  const needsConfinement=mode==='fine'||mode==='imprisonConfinement';
+  const needsFine=mode!=='imprisonment';
+  const result=useMemo(()=>calculateCase({mode,sentence,judgmentDate,pretrialDays,imprisonmentStart,fineAmount,paidBefore,paidToday,confinementStart,checkDate,maxConfinementYears}),[mode,sentence,judgmentDate,pretrialDays,imprisonmentStart,fineAmount,paidBefore,paidToday,confinementStart,checkDate,maxConfinementYears]);
+
+  const setPart=(key:'years'|'months'|'days',value:string)=>setSentence(s=>({...s,[key]:Math.max(0,Number(value)||0)}));
+  const reset=()=>{setMode('fine');setSentence({years:0,months:0,days:0});setJudgmentDate('');setPretrialDays(0);setImprisonmentStart('');setFineAmount(100000);setPaidBefore(0);setPaidToday(0);setConfinementStart('');setCheckDate(today());setMaxConfinementYears(1)};
+  const twoYearDisabled=fineAmount<200000;
+  const modes:[CalculationMode,string,string][]=[
+    ['fine','กักขังแทนค่าปรับ','คำนวณจากจำนวนค่าปรับ'],
+    ['imprisonment','จำคุกอย่างเดียว','คำนวณโทษจำคุกและวันพ้นโทษ'],
+    ['imprisonConfinement','จำคุกและกักขังแทนค่าปรับ','หักวันขังก่อนพิพากษาจากจำคุกก่อน แล้วจึงหักค่าปรับ'],
+  ];
+
+  return <div className="app-shell">
+    <header className="hero"><div className="hero-inner">
+      <div className="brand"><div className="brand-icon"><Scale size={25}/></div><div><div className="eyebrow">LEGAL CALCULATION SYSTEM</div><h1>ระบบคำนวณวันต้องโทษ <b>V3.1</b></h1><p>Engine เดียว • ใช้สูตรเดียวกันทั้งหน้าเว็บและชุดทดสอบ • นับวันเริ่มกักขังรวม</p></div></div>
+      <button className="reset-btn" onClick={reset}><RotateCcw size={16}/>เริ่มคำนวณใหม่</button>
+    </div></header>
+
+    <main className="workspace">
+      <section className="step-card"><div className="section-title"><div className="step-no">01</div><div><h2>เลือกประเภทโทษ</h2><p>เลือกให้ตรงกับคำพิพากษา ระบบจะใช้ Engine เดียวในการคำนวณ</p></div></div>
+        <div className="mode-grid">{modes.map(([v,title,desc])=><button key={v} className={`mode-card ${mode===v?'selected':''}`} onClick={()=>setMode(v)}><span className="mode-check">{mode===v?'✓':''}</span><strong>{title}</strong><small>{desc}</small></button>)}</div>
+      </section>
+
+      {needsPrison&&<section className="step-card"><div className="section-title"><div className="step-no">02</div><div><h2>ข้อมูลโทษจำคุก</h2><p>ระบุระยะเวลาตามคำพิพากษา และวันเริ่มรับโทษ</p></div></div>
+        <div className="input-panel"><div className="panel-label">ระยะเวลาจำคุก</div><div className="sentence-grid">
+          <Field label="ปี"><input type="number" min="0" value={sentence.years} onChange={e=>setPart('years',e.target.value)}/></Field>
+          <Field label="เดือน"><input type="number" min="0" max="11" value={sentence.months} onChange={e=>setPart('months',e.target.value)}/></Field>
+          <Field label="วัน"><input type="number" min="0" value={sentence.days} onChange={e=>setPart('days',e.target.value)}/></Field>
+        </div></div>
+        <div className="grid-two">
+          <Field label="วันพิพากษา" hint="ใช้เป็นวันเริ่มจำคุกอัตโนมัติ หากไม่กรอกวันเริ่มจำคุก"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={judgmentDate} onChange={e=>setJudgmentDate(e.target.value)}/></div></Field>
+          <Field label="วันเริ่มจำคุก"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={imprisonmentStart} onChange={e=>setImprisonmentStart(e.target.value)}/></div></Field>
+        </div>
+      </section>}
+
+      {!needsPrison&&<section className="step-card"><div className="section-title"><div className="step-no">02</div><div><h2>วันพิพากษาและวันเริ่มกักขัง</h2><p>วันเริ่มกักขังนับเป็นวันแรกเต็มวัน</p></div></div><div className="grid-two">
+        <Field label="วันพิพากษา"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={judgmentDate} onChange={e=>setJudgmentDate(e.target.value)}/></div></Field>
+        <Field label="วันเริ่มกักขัง"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={confinementStart} onChange={e=>setConfinementStart(e.target.value)}/></div></Field>
+      </div></section>}
+
+      {needsPrison&&<section className="step-card"><div className="section-title"><div className="step-no">03</div><div><h2>วันคุมขังก่อนพิพากษา</h2><p>กรอกจำนวนวันที่ได้รับการรับรองตามหมายหรือหลักฐาน</p></div></div><div className="grid-two">
+        <Field label="จำนวนวันคุมขังก่อนพิพากษา" hint="กรอกเป็นจำนวนเต็ม ไม่ต้องกรอกวันเริ่มและวันสิ้นสุด"><input type="number" min="0" step="1" inputMode="numeric" value={pretrialDays} onChange={e=>setPretrialDays(Math.max(0,Math.floor(Number(e.target.value)||0)))}/></Field>
+        <div className="inline-info" style={{alignSelf:'end'}}><CalendarDays size={16}/> จำนวนที่นำมาคิด <b>{pretrialDays} วัน</b></div>
+      </div></section>}
+
+      {needsFine&&<section className="step-card"><div className="section-title"><div className="step-no">{needsPrison?'04':'03'}</div><div><h2>รายละเอียดค่าปรับ</h2><p>อัตรากักขังแทนค่าปรับกำหนดที่ 500 บาทต่อวัน</p></div></div><div className="grid-three">
+        <Field label="ค่าปรับตามคำพิพากษา"><div className="money-input"><input type="number" min="0" value={fineAmount} onChange={e=>setFineAmount(Math.max(0,Number(e.target.value)||0))}/><span>บาท</span></div></Field>
+        <Field label="ชำระก่อนเริ่มกักขัง"><div className="money-input"><input type="number" min="0" value={paidBefore} onChange={e=>setPaidBefore(Math.max(0,Number(e.target.value)||0))}/><span>บาท</span></div></Field>
+        <Field label="อัตราตามกฎหมาย"><div className="money-input"><input type="text" value="500" readOnly/><span>บาท/วัน</span></div></Field>
+      </div><div className="fine-strip"><WalletCards size={18}/><span>ค่าปรับหลังหักเงินที่ชำระก่อน</span><b>{money(result.fine.initialRemaining)}</b></div></section>}
+
+      {needsConfinement&&<section className="step-card"><div className="section-title"><div className="step-no">{needsPrison?'05':'04'}</div><div><h2>การกักขังแทนค่าปรับ</h2><p>ระบบนับวันเริ่มกักขังรวม และใช้ 500 บาทต่อวัน</p></div></div>
+        <div className="grid-two">
+          <Field label="วันเริ่มกักขัง"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={confinementStart} onChange={e=>setConfinementStart(e.target.value)}/></div></Field>
+          <Field label="วันที่ตรวจสอบ / วันที่มาชำระ"><div className="date-wrap"><CalendarDays size={18}/><input type="date" value={checkDate} onChange={e=>setCheckDate(e.target.value)}/></div></Field>
+          <Field label="ชำระเงินวันนี้"><div className="money-input"><input type="number" min="0" value={paidToday} onChange={e=>setPaidToday(Math.max(0,Number(e.target.value)||0))}/><span>บาท</span></div></Field>
+          <Field label="เพดานกักขัง"><select value={maxConfinementYears} onChange={e=>setMaxConfinementYears(Number(e.target.value) as 1|2)}><option value="1">ไม่เกิน 1 ปี</option><option value="2" disabled={twoYearDisabled}>ไม่เกิน 2 ปี {twoYearDisabled?'(ค่าปรับต้องตั้งแต่ 200,000 บาท)':''}</option></select></Field>
+        </div>
+        {twoYearDisabled&&<div className="inline-info">⚠️ ค่าปรับต่ำกว่า 200,000 บาท จึงใช้เพดานได้ไม่เกิน 1 ปี</div>}
+        {result.confinement.elapsedDays>0&&<div className="inline-info"><CalendarDays size={16}/> กักขังมาแล้ว <b>{result.confinement.elapsedDays} วัน</b> • เครดิตค่าปรับ {money(result.fine.confinementCredit)}</div>}
+        {result.confinement.exceedsMaximum&&<div className="inline-info danger-info">⚠️ วันกักขังที่คำนวณเหลือเกินเพดานที่เลือก โปรดตรวจสอบคำพิพากษาและยอดค่าปรับ</div>}
+      </section>}
+
+      <section className="summary-card"><div className="summary-head"><div><div className="eyebrow dark">CALCULATION RESULT</div><h2>ผลคำนวณจาก Engine V3</h2></div><span className={`status ${result.status==='PAID'?'paid':''}`}>{result.status==='PAID'?'✓ ครบตามข้อมูลที่กรอก':'● ยังมีโทษ/ยอดคงเหลือ'}</span></div>
+        <div className="result-grid">
+          {needsPrison&&<><Result label="โทษจำคุกตามคำพิพากษา" value={formatSentence(sentence)}/><Result label="วันคุมขังก่อนพิพากษา" value={`${pretrialDays} วัน`}/><Result label="หักเข้าโทษจำคุก" value={`${result.sentence.imprisonmentCreditDays} วัน`}/><Result label="วันคุมขังส่วนเกิน" value={`${result.sentence.remainingPretrialDays} วัน`}/><Result label="โทษจำคุกคงเหลือ" value={`${result.sentence.remainingDays} วัน`} hot/><Result label="วันสิ้นสุดโทษตามปฏิทิน" value={formatThaiDate(result.sentence.statutoryEnd)}/><Result label="วันพ้นโทษหลังหักเครดิต" value={formatThaiDate(result.sentence.projectedRelease)} hot/></>}
+          {needsFine&&<><Result label="ค่าปรับคงเหลือ" value={money(result.fine.remaining)} hot/><Result label="เครดิตจากคุมขังก่อนพิพากษา" value={money(result.fine.pretrialFineCredit)}/></>}
+          {needsConfinement&&<><Result label="กักขังแทนค่าปรับคงเหลือ" value={`${result.confinement.remainingDays} วัน`} hot/><Result label="เพดานกักขัง" value={`${result.confinement.maxDays} วัน`}/><Result label="วันพ้นโทษกักขังโดยประมาณ" value={formatThaiDate(result.confinement.projectedEnd)} hot/></>}
+        </div>
+        <div className="formula-mini"><Calculator size={16}/><span><b>calculateCase()</b> เป็นแหล่งคำนวณเพียงชุดเดียว • 500 บาท/วัน • จำคุกก่อนแล้วจึงหักค่าปรับในกรณีมีทั้งจำคุกและปรับ</span></div>
+      </section>
+      <section className="warning">⚠️ <span><b>หมายเหตุ:</b> เครื่องมือนี้เป็นตัวช่วยคำนวณเบื้องต้น ต้องตรวจสอบคำพิพากษา หมายจำคุก/หมายกักขัง และวันที่เริ่มนับโทษจริงทุกครั้ง</span></section>
+    </main>
+  </div>;
 }
