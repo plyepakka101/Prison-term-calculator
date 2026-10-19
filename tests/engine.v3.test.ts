@@ -199,4 +199,20 @@ assert.equal(ymd(addSentence(parseLocalDate('2026-05-10'), { years: 0, months: 0
   assert.equal(r.status, 'PENDING');
 }
 
+// 26. Paying the balance in full is released immediately (s.30): 100,000 baht, 10 days served, 85,000 paid on 10 Sep.
+{
+  const r = calculateCase({ ...base, mode: 'fine', checkDate: '2026-09-10', paidToday: 95000 });
+  assert.equal(r.fine.remaining, 0);
+  assert.equal(r.confinement.remainingDays, 0);
+  assert.equal(ymd(r.confinement.projectedEnd), '2026-09-10');
+  assert.equal(r.status, 'PAID');
+}
+
+// 27. Serving the full term without paying is released the day after the last day: 1,500 baht = 3 days from 1 Sep.
+{
+  const r = calculateCase({ ...base, mode: 'fine', fineAmount: 1500, checkDate: '2026-09-05' });
+  assert.equal(r.fine.remaining, 0);
+  assert.equal(ymd(r.confinement.projectedEnd), '2026-09-04');
+}
+
 console.log('✓ All PrisonTermEngine V3.1 regression tests passed');

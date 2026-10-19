@@ -113,7 +113,8 @@ export function calculateCase(input:CalculationInput):CalculationResult {
   const projectedConfinementEnd=remainingConfinementDays>0&&lastCreditedDay
     ? addDays(lastCreditedDay,remainingConfinementDays+1)
     : (needsConfinement&&fineRemaining===0
-      ? (confinementStart ? addDays(confinementStart, Math.ceil(fineAfterPretrial/FINE_RATE)) : (checkDate ? addDays(checkDate,1) : null))
+      // ม.30 วรรคท้าย: ชำระค่าปรับครบในวันตรวจสอบ ให้ปล่อยตัวทันที (ไม่ต้องรอครบกำหนดกักขัง)
+      ? (paidToday>0&&checkDate ? checkDate : confinementStart ? addDays(confinementStart, Math.ceil(fineAfterPretrial/FINE_RATE)) : (checkDate ? addDays(checkDate,1) : null))
       : null);
   const remainingSentenceDays=needsImprisonment?Math.max(0,nominalAllocationDays-imprisonmentCreditDays):0;
   // imprisonmentStart คือวันแรกของโทษ (นับรวม) วันพ้นโทษคือวันถัดจากวันสุดท้าย
