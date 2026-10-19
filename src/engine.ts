@@ -15,7 +15,12 @@ export interface CalculationResult {
     confinementCredit:number; paidToday:number; remaining:number; rate:number };
   confinement: { elapsedDays:number; remainingDays:number; uncappedRemainingDays:number; maxDays:number; maxEnd:Date|null;
     exceedsMaximum:boolean; twoYearEligible:boolean; projectedEnd:Date|null };
-  status: 'PAID' | 'PENDING';
+  /** PAID = ครบตามข้อมูลที่กรอก, PENDING = ยังมีโทษ/ยอดคงเหลือ, INCOMPLETE = กรอกข้อมูลที่จำเป็นไม่ครบ */
+  status: 'PAID' | 'PENDING' | 'INCOMPLETE';
+  /** ข้อมูลที่จำเป็นต่อการคำนวณแต่ยังไม่ได้กรอก (ชื่อช่องภาษาไทย) */
+  missingInputs: string[];
+  /** ข้อสังเกตที่ไม่ขัดขวางการคำนวณ เช่น ช่วงวันซ้อนกัน หรือวันตรวจสอบก่อนวันเริ่มกักขัง */
+  warnings: string[];
 }
 
 const DAY_MS = 86400000;
@@ -117,11 +122,27 @@ export function calculateCase(input:CalculationInput):CalculationResult {
     :null;
   const complete=(needsImprisonment?remainingSentenceDays===0:true) && fineRemaining===0 && (!needsConfinement||remainingConfinementDays===0);
 
+  // ข้อมูลที่ขาด: ถ้าไม่มีข้อมูลเหล่านี้ ตัวเลขที่ได้ไม่ควรถูกอ่านว่าเป็นผลสุดท้าย
+  const missingInputs:string[]=[];
+  if (needsImprisonment) {
+    if (integer(input.sentence.years)+integer(input.sentence.months)+integer(input.sentence.days)===0) missingInputs.push('ระยะเวลาจำคุก');
+    if (!imprisonmentStart) missingInputs.push('วันพิพากษาหรือวันเริ่มจำคุก');
+  }
+  if (needsConfinement&&fineAfterPretrial>0&&!confinementStart) missingInputs.push('วันเริ่มกักขัง');
+
+  const warnings:string[]=[];
+  if (needsConfinement&&confinementStart&&checkDate&&checkDate<confinementStart)
+    warnings.push('วันที่ตรวจสอบอยู่ก่อนวันเริ่มกักขัง ระบบจึงยังไม่นับเครดิตจากการกักขัง');
+  if (input.mode==='imprisonConfinement'&&confinementStart&&projectedRelease&&confinementStart<projectedRelease)
+    warnings.push('วันเริ่มกักขังอยู่ก่อนวันพ้นโทษจำคุกที่คำนวณได้ (ช่วงวันซ้อนกัน) โปรดตรวจสอบหมายและลำดับการบังคับโทษ');
+
   return {
     mode:input.mode,
     sentence:{...input.sentence,nominalAllocationDays,pretrialDays,imprisonmentCreditDays,remainingPretrialDays,remainingDays:remainingSentenceDays,statutoryEnd,projectedRelease},
     fine:{initialRemaining:initialFineRemaining,amount:fineAmount,paidBefore,pretrialFineCredit,confinementCredit,paidToday,remaining:fineRemaining,rate:FINE_RATE},
     confinement:{elapsedDays,remainingDays:remainingConfinementDays,uncappedRemainingDays,maxDays,maxEnd,exceedsMaximum,twoYearEligible,projectedEnd:projectedConfinementEnd},
-    status:complete?'PAID':'PENDING',
+    status:missingInputs.length>0?'INCOMPLETE':complete?'PAID':'PENDING',
+    missingInputs,
+    warnings,
   };
 }

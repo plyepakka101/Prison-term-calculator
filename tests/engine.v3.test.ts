@@ -150,4 +150,53 @@ assert.equal(ymd(addSentence(parseLocalDate('2026-05-10'), { years: 0, months: 0
   assert.equal(r.confinement.remainingDays, r.confinement.uncappedRemainingDays);
 }
 
+// 20. Confinement starting before imprisonment ends is flagged (but still calculated).
+{
+  const r = calculateCase({ ...base, mode: 'imprisonConfinement', judgmentDate: '2026-01-01', imprisonmentStart: '2026-01-01', sentence: { years: 2, months: 0, days: 0 }, confinementStart: '2026-02-01', checkDate: '2026-03-01' });
+  assert.equal(r.warnings.length, 1);
+  assert.match(r.warnings[0], /ซ้อนกัน/);
+  assert.equal(r.confinement.elapsedDays, 29);
+}
+
+// 21. Confinement starting after imprisonment ends raises no overlap warning.
+{
+  const r = calculateCase({ ...base, mode: 'imprisonConfinement', judgmentDate: '2026-01-01', imprisonmentStart: '2026-01-01', sentence: { years: 0, months: 0, days: 10 } });
+  assert.deepEqual(r.warnings, []);
+  assert.deepEqual(r.missingInputs, []);
+}
+
+// 22. Check date before the confinement start is reported instead of silently giving zero credit.
+{
+  const r = calculateCase({ ...base, mode: 'fine', confinementStart: '2026-09-10', checkDate: '2026-09-01' });
+  assert.equal(r.warnings.length, 1);
+  assert.match(r.warnings[0], /ก่อนวันเริ่มกักขัง/);
+}
+
+// 23. Missing imprisonment inputs make the result INCOMPLETE rather than looking final.
+{
+  const a = calculateCase({ ...base, mode: 'imprisonment', sentence: { years: 1, months: 0, days: 0 } });
+  assert.deepEqual(a.missingInputs, ['วันพิพากษาหรือวันเริ่มจำคุก']);
+  assert.equal(a.status, 'INCOMPLETE');
+  const b = calculateCase({ ...base, mode: 'imprisonment', judgmentDate: '2026-01-01' });
+  assert.deepEqual(b.missingInputs, ['ระยะเวลาจำคุก']);
+  assert.equal(b.status, 'INCOMPLETE');
+}
+
+// 24. Confinement start is required only while some fine is still left to be served.
+{
+  const owing = calculateCase({ ...base, mode: 'fine', confinementStart: '', checkDate: '' });
+  assert.deepEqual(owing.missingInputs, ['วันเริ่มกักขัง']);
+  assert.equal(owing.status, 'INCOMPLETE');
+  const settled = calculateCase({ ...base, mode: 'fine', paidBefore: 100000, confinementStart: '', checkDate: '' });
+  assert.deepEqual(settled.missingInputs, []);
+  assert.equal(settled.status, 'PAID');
+}
+
+// 25. A fully specified case with money still owed is PENDING with no missing inputs.
+{
+  const r = calculateCase({ ...base, mode: 'fine' });
+  assert.deepEqual(r.missingInputs, []);
+  assert.equal(r.status, 'PENDING');
+}
+
 console.log('✓ All PrisonTermEngine V3.1 regression tests passed');
