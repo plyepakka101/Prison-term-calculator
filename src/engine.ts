@@ -5,6 +5,8 @@ export interface CalculationInput {
   mode: CalculationMode; sentence: SentenceInput; judgmentDate: string; pretrialDays: number;
   imprisonmentStart: string; fineAmount: number; paidBefore: number; paidToday: number;
   confinementStart: string; checkDate: string; maxConfinementYears: 1 | 2;
+  /** ม.22: หักวันคุมขังก่อนพิพากษาจากโทษจำคุก เว้นแต่คำพิพากษากล่าวไว้เป็นอย่างอื่น (ค่าเริ่มต้น true) */
+  creditPretrialToImprisonment?: boolean;
 }
 export interface CalculationResult {
   mode: CalculationMode;
@@ -83,7 +85,8 @@ export function calculateCase(input:CalculationInput):CalculationResult {
   const nominalAllocationDays=calendarSentenceDays||fallbackSentenceDays;
 
   // จำคุก + ปรับ: หักวันคุมขังก่อนพิพากษาจากโทษจำคุกก่อน เหลือเท่าใดจึงหักจากปรับ
-  const imprisonmentCreditDays=input.mode==='fine'?0:Math.min(pretrialDays,nominalAllocationDays);
+  const creditToImprisonment=input.creditPretrialToImprisonment!==false;
+  const imprisonmentCreditDays=input.mode==='fine'||!creditToImprisonment?0:Math.min(pretrialDays,nominalAllocationDays);
   const remainingPretrialDays=input.mode==='fine'?pretrialDays:Math.max(0,pretrialDays-imprisonmentCreditDays);
   const pretrialFineCredit=input.mode==='imprisonment'?0:Math.min(initialFineRemaining,remainingPretrialDays*FINE_RATE);
 
@@ -132,6 +135,14 @@ export function calculateCase(input:CalculationInput):CalculationResult {
   if (needsConfinement&&fineAfterPretrial>0&&!confinementStart) missingInputs.push('วันเริ่มกักขัง');
 
   const warnings:string[]=[];
+  // ม.22: โทษจำคุกเริ่มแต่วันมีคำพิพากษา
+  const explicitStart=parseLocalDate(input.imprisonmentStart);
+  if (needsImprisonment&&judgmentDate&&explicitStart&&explicitStart.getTime()!==judgmentDate.getTime())
+    warnings.push('วันเริ่มจำคุกไม่ตรงกับวันพิพากษา ตามมาตรา 22 โทษจำคุกเริ่มนับแต่วันมีคำพิพากษา โปรดตรวจสอบว่าใช้วันที่ตามหมายหรือคำพิพากษาถูกต้อง');
+  if (needsImprisonment&&!creditToImprisonment&&pretrialDays>0)
+    warnings.push(input.mode==='imprisonConfinement'
+      ? 'ไม่ได้หักวันคุมขังก่อนพิพากษาจากโทษจำคุก (คำพิพากษากล่าวไว้เป็นอย่างอื่น) วันคุมขังทั้งหมดจึงถูกนำไปหักค่าปรับ โปรดตรวจสอบกับคำพิพากษาว่าให้หักค่าปรับด้วยหรือไม่'
+      : 'ไม่ได้หักวันคุมขังก่อนพิพากษาจากโทษจำคุก ตามที่ระบุว่าคำพิพากษากล่าวไว้เป็นอย่างอื่น');
   if (needsConfinement&&confinementStart&&checkDate&&checkDate<confinementStart)
     warnings.push('วันที่ตรวจสอบอยู่ก่อนวันเริ่มกักขัง ระบบจึงยังไม่นับเครดิตจากการกักขัง');
   if (input.mode==='imprisonConfinement'&&confinementStart&&projectedRelease&&confinementStart<projectedRelease)

@@ -215,4 +215,40 @@ assert.equal(ymd(addSentence(parseLocalDate('2026-05-10'), { years: 0, months: 0
   assert.equal(ymd(r.confinement.projectedEnd), '2026-09-04');
 }
 
+// 28. s.22 "unless the judgment says otherwise": with crediting off, no pretrial days reduce the imprisonment.
+{
+  const r = calculateCase({ ...base, mode: 'imprisonment', judgmentDate: '2026-01-01', imprisonmentStart: '2026-01-01', sentence: { years: 1, months: 0, days: 0 }, pretrialDays: 45, creditPretrialToImprisonment: false });
+  assert.equal(r.sentence.imprisonmentCreditDays, 0);
+  assert.equal(r.sentence.remainingDays, 365);
+  assert.equal(ymd(r.sentence.projectedRelease), '2027-01-01');
+  assert.equal(r.warnings.length, 1);
+}
+
+// 29. Combined case with crediting off: all pretrial days remain available for the fine.
+{
+  const r = calculateCase({ ...base, mode: 'imprisonConfinement', judgmentDate: '2026-01-01', imprisonmentStart: '2026-01-01', sentence: { years: 0, months: 0, days: 10 }, pretrialDays: 15, creditPretrialToImprisonment: false });
+  assert.equal(r.sentence.imprisonmentCreditDays, 0);
+  assert.equal(r.sentence.remainingPretrialDays, 15);
+  assert.equal(r.fine.pretrialFineCredit, 7500);
+  assert.equal(r.warnings.length, 1);
+  assert.match(r.warnings[0], /ค่าปรับ/);
+}
+
+// 30. Crediting stays on by default (undefined) and when explicitly true.
+{
+  const input = { ...base, mode: 'imprisonment' as const, judgmentDate: '2026-01-01', imprisonmentStart: '2026-01-01', sentence: { years: 0, months: 0, days: 10 }, pretrialDays: 4 };
+  assert.equal(calculateCase(input).sentence.imprisonmentCreditDays, 4);
+  assert.equal(calculateCase({ ...input, creditPretrialToImprisonment: true }).sentence.imprisonmentCreditDays, 4);
+}
+
+// 31. s.22 imprisonment starts on the judgment date: a different start date is flagged, a matching or omitted one is not.
+{
+  const common = { ...base, mode: 'imprisonment' as const, sentence: { years: 0, months: 0, days: 10 }, judgmentDate: '2026-01-01' };
+  const diff = calculateCase({ ...common, imprisonmentStart: '2026-01-05' });
+  assert.equal(diff.warnings.length, 1);
+  assert.match(diff.warnings[0], /วันพิพากษา/);
+  assert.deepEqual(calculateCase({ ...common, imprisonmentStart: '2026-01-01' }).warnings, []);
+  assert.deepEqual(calculateCase({ ...common, imprisonmentStart: '' }).warnings, []);
+}
+
 console.log('✓ All PrisonTermEngine V3.1 regression tests passed');
