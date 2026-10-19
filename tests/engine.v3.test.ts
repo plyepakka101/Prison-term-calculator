@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { addSentence, calculateCase, inclusiveDays, parseLocalDate } from '../src/engine';
 
+// Format a local calendar date as YYYY-MM-DD (toISOString shifts the day by the time zone).
+const ymd = (d?: Date | null) => d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` : null;
+
 const base = {
   sentence: { years: 0, months: 0, days: 0 },
   judgmentDate: '', pretrialDays: 0, imprisonmentStart: '',
@@ -23,7 +26,8 @@ assert.equal(inclusiveDays(parseLocalDate('2026-09-01'), parseLocalDate('2026-09
   const r = calculateCase({ ...base, mode: 'imprisonment', judgmentDate: '2026-01-01', imprisonmentStart: '2026-01-01', sentence: { years: 1, months: 0, days: 0 }, pretrialDays: 45 });
   assert.equal(r.sentence.nominalAllocationDays, 365); assert.equal(r.sentence.imprisonmentCreditDays, 45);
   assert.equal(r.sentence.remainingPretrialDays, 0); assert.equal(r.fine.remaining, 0);
-  assert.equal(r.sentence.projectedRelease?.toISOString().slice(0,10), '2026-11-15');
+  // 1 Jan + 320 remaining days: last served day is 16 Nov, release is the day after.
+  assert.equal(ymd(r.sentence.projectedRelease), '2026-11-17');
 }
 
 // 3. Combined case: 10-day imprisonment + 15 pretrial days => 5 days credit the fine.
@@ -38,7 +42,8 @@ assert.equal(inclusiveDays(parseLocalDate('2026-09-01'), parseLocalDate('2026-09
   const r = calculateCase({ ...base, mode: 'imprisonConfinement', judgmentDate: '2026-09-01', sentence: { years: 1, months: 0, days: 0 }, confinementStart: '2026-09-01', checkDate: '2026-09-10', paidToday: 10000 });
   assert.equal(r.confinement.elapsedDays, 10); assert.equal(r.fine.confinementCredit, 5000);
   assert.equal(r.fine.paidToday, 10000); assert.equal(r.fine.remaining, 85000); assert.equal(r.confinement.remainingDays, 170);
-  assert.equal(r.confinement.projectedEnd?.toISOString().slice(0,10), '2027-02-26');
+  // Last confinement day = 10 Sep + 170 = 27 Feb 2027; release is the day after (same convention as imprisonment).
+  assert.equal(ymd(r.confinement.projectedEnd), '2027-02-28');
 }
 
 // 5. Invalid date order gives zero confinement credit.
@@ -68,20 +73,21 @@ assert.equal(inclusiveDays(parseLocalDate('2026-09-01'), parseLocalDate('2026-09
 }
 
 // 9. One-day sentence ends on its start date.
-assert.equal(addSentence(parseLocalDate('2026-05-10'), { years: 0, months: 0, days: 1 })?.toISOString().slice(0,10), '2026-05-09');
+assert.equal(ymd(addSentence(parseLocalDate('2026-05-10'), { years: 0, months: 0, days: 1 })), '2026-05-10');
 
 // 10. One pretrial day fully credits a one-day sentence.
 {
   const r = calculateCase({ ...base, mode: 'imprisonment', judgmentDate: '2026-05-10', imprisonmentStart: '2026-05-10', sentence: { years: 0, months: 0, days: 1 }, pretrialDays: 1 });
   assert.equal(r.sentence.imprisonmentCreditDays, 1); assert.equal(r.sentence.remainingDays, 0);
-  assert.equal(r.sentence.projectedRelease?.toISOString().slice(0,10), '2026-05-09');
+  // Fully credited: nothing left to serve, so release falls on the start date.
+  assert.equal(ymd(r.sentence.projectedRelease), '2026-05-10');
 }
 
 // 11. Judgment date is used as prison start when imprisonmentStart is omitted.
 {
   const r = calculateCase({ ...base, mode: 'imprisonment', judgmentDate: '2026-01-01', imprisonmentStart: '', sentence: { years: 0, months: 0, days: 1 } });
-  assert.equal(r.sentence.statutoryEnd?.toISOString().slice(0,10), '2026-01-01');
-  assert.equal(r.sentence.projectedRelease?.toISOString().slice(0,10), '2025-12-31');
+  assert.equal(ymd(r.sentence.statutoryEnd), '2026-01-01');
+  assert.equal(ymd(r.sentence.projectedRelease), '2026-01-02');
 }
 
 // 12. Payments cannot make the balance negative.
@@ -102,6 +108,46 @@ assert.equal(addSentence(parseLocalDate('2026-05-10'), { years: 0, months: 0, da
   const r = calculateCase({ ...base, mode: 'imprisonConfinement', fineAmount: 100000, paidBefore: 20000, pretrialDays: 15, sentence: { years: 0, months: 0, days: 10 }, judgmentDate: '2026-01-01', imprisonmentStart: '2026-01-01', confinementStart: '2026-09-01', checkDate: '2026-09-02' });
   assert.equal(r.fine.initialRemaining, 80000); assert.equal(r.fine.pretrialFineCredit, 2500);
   assert.equal(r.fine.confinementCredit, 1000); assert.equal(r.fine.remaining, 76500); assert.equal(r.confinement.remainingDays, 153);
+}
+
+// 15. Confinement release date is the day after the last day, like imprisonment: 3 days from 1 Sep => last day 3 Sep, release 4 Sep.
+{
+  const r = calculateCase({ ...base, mode: 'fine', fineAmount: 1500 });
+  assert.equal(r.confinement.remainingDays, 2);
+  assert.equal(ymd(r.confinement.projectedEnd), '2026-09-04');
+}
+
+// 16. Same convention with no credit yet and no payment: start + total days.
+{
+  const r = calculateCase({ ...base, mode: 'fine', fineAmount: 1500, checkDate: '' });
+  assert.equal(r.confinement.remainingDays, 3);
+  assert.equal(ymd(r.confinement.projectedEnd), '2026-09-04');
+}
+
+// 17. Ceiling truncates the days: 190,000 baht = 380 days but the 1-year ceiling from 1 Sep 2026 is 365 days.
+{
+  const r = calculateCase({ ...base, mode: 'fine', fineAmount: 190000 });
+  assert.equal(r.confinement.uncappedRemainingDays, 379);
+  assert.equal(r.confinement.maxDays, 365);
+  assert.equal(r.confinement.remainingDays, 364);
+  assert.equal(r.confinement.exceedsMaximum, true);
+  assert.equal(ymd(r.confinement.projectedEnd), '2027-09-01');
+}
+
+// 18. Ceiling counts elapsed + remaining days, not remaining alone: 200 elapsed + 200 remaining > 365.
+{
+  const r = calculateCase({ ...base, mode: 'fine', fineAmount: 200000, maxConfinementYears: 1, confinementStart: '2026-09-01', checkDate: '2027-03-19' });
+  assert.equal(r.confinement.elapsedDays, 200);
+  assert.equal(r.confinement.uncappedRemainingDays, 200);
+  assert.equal(r.confinement.exceedsMaximum, true);
+  assert.equal(r.confinement.remainingDays, 165);
+}
+
+// 19. Within the ceiling nothing is truncated and no warning is raised.
+{
+  const r = calculateCase({ ...base, mode: 'fine', fineAmount: 100000 });
+  assert.equal(r.confinement.exceedsMaximum, false);
+  assert.equal(r.confinement.remainingDays, r.confinement.uncappedRemainingDays);
 }
 
 console.log('✓ All PrisonTermEngine V3.1 regression tests passed');

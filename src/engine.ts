@@ -13,7 +13,7 @@ export interface CalculationResult {
     statutoryEnd:Date|null; projectedRelease:Date|null };
   fine: { initialRemaining:number; amount:number; paidBefore:number; pretrialFineCredit:number;
     confinementCredit:number; paidToday:number; remaining:number; rate:number };
-  confinement: { elapsedDays:number; remainingDays:number; maxDays:number; maxEnd:Date|null;
+  confinement: { elapsedDays:number; remainingDays:number; uncappedRemainingDays:number; maxDays:number; maxEnd:Date|null;
     exceedsMaximum:boolean; twoYearEligible:boolean; projectedEnd:Date|null };
   status: 'PAID' | 'PENDING';
 }
@@ -90,18 +90,23 @@ export function calculateCase(input:CalculationInput):CalculationResult {
   const fineBeforeToday=Math.max(0,fineAfterPretrial-confinementCredit);
   const paidToday=Math.min(clamp(input.paidToday),fineBeforeToday);
   const fineRemaining=Math.max(0,fineBeforeToday-paidToday);
-  const remainingConfinementDays=needsConfinement?Math.ceil(fineRemaining/FINE_RATE):0;
+  const uncappedRemainingDays=needsConfinement?Math.ceil(fineRemaining/FINE_RATE):0;
 
   const twoYearEligible=fineAmount>=200000;
   const maxYears=input.maxConfinementYears===2&&twoYearEligible?2:1;
   const maxEnd=confinementStart?subtractDays(new Date(confinementStart.getFullYear()+maxYears,confinementStart.getMonth(),confinementStart.getDate()),1):null;
   const maxDays=confinementStart?inclusiveDays(confinementStart,maxEnd):maxYears*365;
-  const exceedsMaximum=needsConfinement&&remainingConfinementDays>maxDays;
+  // เพดานใช้กับจำนวนวันกักขังรวม (ที่กักไปแล้ว + ที่ยังเหลือ) ไม่ใช่เฉพาะวันที่เหลือ
+  const exceedsMaximum=needsConfinement&&elapsedDays+uncappedRemainingDays>maxDays;
+  const remainingConfinementDays=needsConfinement?Math.min(uncappedRemainingDays,Math.max(0,maxDays-elapsedDays)):0;
 
   // checkDate คือวันสุดท้ายที่รับเครดิตแล้ว ดังนั้นวันคงเหลือวันแรกคือ checkDate + 1
-  // วันพ้นโทษคือวันถัดจากวันที่รับโทษครบ
-  const projectedConfinementEnd=remainingConfinementDays>0&& (checkDate||confinementStart)
-    ? addDays(checkDate||confinementStart!,remainingConfinementDays)
+  // วันสุดท้ายของกักขังคือ checkDate + remaining และวันพ้นโทษคือวันถัดจากนั้น (+1) เช่นเดียวกับโทษจำคุก
+  // ถ้ายังไม่มีวันกักขังที่นับเครดิตแล้ว (elapsedDays=0) ให้ถือว่าวันสุดท้ายที่รับเครดิตคือวันก่อนวันเริ่มกักขัง
+  const firstDay=confinementStart||checkDate;
+  const lastCreditedDay=elapsedDays>0?checkDate:(firstDay?subtractDays(firstDay,1):null);
+  const projectedConfinementEnd=remainingConfinementDays>0&&lastCreditedDay
+    ? addDays(lastCreditedDay,remainingConfinementDays+1)
     : (needsConfinement&&fineRemaining===0
       ? (confinementStart ? addDays(confinementStart, Math.ceil(fineAfterPretrial/FINE_RATE)) : (checkDate ? addDays(checkDate,1) : null))
       : null);
@@ -116,7 +121,7 @@ export function calculateCase(input:CalculationInput):CalculationResult {
     mode:input.mode,
     sentence:{...input.sentence,nominalAllocationDays,pretrialDays,imprisonmentCreditDays,remainingPretrialDays,remainingDays:remainingSentenceDays,statutoryEnd,projectedRelease},
     fine:{initialRemaining:initialFineRemaining,amount:fineAmount,paidBefore,pretrialFineCredit,confinementCredit,paidToday,remaining:fineRemaining,rate:FINE_RATE},
-    confinement:{elapsedDays,remainingDays:remainingConfinementDays,maxDays,maxEnd,exceedsMaximum,twoYearEligible,projectedEnd:projectedConfinementEnd},
+    confinement:{elapsedDays,remainingDays:remainingConfinementDays,uncappedRemainingDays,maxDays,maxEnd,exceedsMaximum,twoYearEligible,projectedEnd:projectedConfinementEnd},
     status:complete?'PAID':'PENDING',
   };
 }

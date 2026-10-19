@@ -14,10 +14,10 @@ const base = {
   maxConfinementYears: 1 as 1 | 2,
 };
 
-// 1) กักขังแทนค่าปรับ: 100,000 / 500 = 200 วัน
+// 1) กักขังแทนค่าปรับ: 100,000 / 500 = 200 วัน; วันเริ่มกักขังนับเป็นวันที่ 1 จึงมีเครดิต 500 บาท เหลือ 99,500
 {
   const r = calculateCase({ ...base, mode: 'fine' });
-  assert.equal(r.fine.remaining, 100000);
+  assert.equal(r.fine.remaining, 99500);
   assert.equal(r.confinement.remainingDays, 199, 'the start date is counted as the first confinement day');
 }
 
@@ -29,7 +29,7 @@ const base = {
   assert.equal(r.fine.pretrialFineCredit, 0);
 }
 
-// 3) จำคุกและกักขังแทนค่าปรับ: เริ่ม 1 ก.ย. ถึง 10 ก.ย. = 9 วันที่ครบแล้ว (ไม่นับวันแรกเป็นเครดิต) = เครดิต 4,500 บาท; ชำระเพิ่ม 10,000 => เหลือ 85,500 = 171 วัน
+// 3) จำคุกและกักขังแทนค่าปรับ: 1 ก.ย. ถึง 10 ก.ย. นับรวมวันแรก = 10 วัน = เครดิต 5,000 บาท; ชำระเพิ่ม 10,000 => เหลือ 85,000 = 170 วัน
 {
   const r = calculateCase({ ...base, mode: 'imprisonConfinement', sentence: { years: 1, months: 0, days: 0 }, pretrialDays: 0, confinementStart: '2026-09-01', checkDate: '2026-09-10', paidToday: 10000 });
   assert.equal(r.confinement.elapsedDays, 10);
