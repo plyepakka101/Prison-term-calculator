@@ -11,7 +11,7 @@ export default defineConfig(() => ({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['icon.svg', 'apple-touch-icon.png'],
+      includeAssets: ['icon.svg'],
       manifest: {
         name: 'ระบบคำนวณวันต้องโทษ',
         short_name: 'คำนวณวันต้องโทษ',
